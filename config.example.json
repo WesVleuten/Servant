@@ -3,15 +3,15 @@
 	"twitch": {
 		"clientId": ""
 	},
-	"database": {
-		"host": "",
-		"user": "",
-		"password": "",
-		"database": ""
-	},
 	"discord": {
 		"clientId": "",
 		"clientSecret": "",
 		"botToken": ""
+	},
+	"database": {
+		"host": "mysql",
+		"user": "dev",
+		"password": "dev",
+		"database": "servant"
 	}
 }
