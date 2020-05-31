@@ -3,7 +3,7 @@ import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { getTextChannel } from "../lib/util";
 import config from "../lib/config";
-import * as request from "request";
+import fetch from "node-fetch";
 
 const sleep = waitTimeInMs => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
@@ -55,39 +55,40 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 
 		const streamUrl = streamingActivity.url;
 		const streamUsername = streamUrl.substr(22);
-		const twitchuri = `https://api.twitch.tv/helix/streams?user_login=${streamUsername}`;
+		const twitchUri = `https://api.twitch.tv/helix/streams?user_login=${streamUsername}`;
+		const userAgent = "Servant"
 
 		await sleep(2 * 60 * 1000);
-		// TODO:
-		// Remove request dependency
-		request({
-			method: 'GET',
-			url: twitchuri,
+		fetch(twitchUri, {
+			method: 'get',
 			headers: {
 				'Client-ID': config.twitch.clientId,
+				'User-Agent': userAgent,
+				'Authorization': 'Bearer ' + config.twitch.oauthToken
 			}
-		}, function (error, res, body) {
-			if (error || !body) {
+		})
+        .then(res => res.json())
+		.then(json => {
+			if (json.data.length == 0) {
 				return;
 			}
-			const data = JSON.parse(body);
-			console.log("streamerData", data);
 
-			const strem = data.data[0];
-			const thumb = strem.thumbnail_url.replace('{width}x{height}', '384x216');
+			console.log("streamerData", json);
+
+			const stream = json.data[0];
+			const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
 
 			const embed = new MessageEmbed()
 				.setColor(randomColor)
-				.setImage(thumb)
+				.setImage(thumbnail)
 				.setAuthor(`${guildMember.user.tag}`, `${guildMember.user.avatarURL}`)
-				.setDescription(`**Streamer:** ${strem.user_name}`)
-				.addField("**Stream Title:**", `${strem.title}`, false)
+				.setDescription(`**Streamer:** ${stream.user_name}`)
+				.addField("**Stream Title:**", `${stream.title}`, false)
 				.addField("**Stream URL:**", `${streamUrl}`, false);
 
 			promotionChannel.send({embed});
 			return;
 		});
-
 	}
 
 }
