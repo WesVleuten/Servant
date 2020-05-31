@@ -59,36 +59,33 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		const userAgent = "Servant"
 
 		await sleep(2 * 60 * 1000);
-		fetch(twitchUri, {
+		const response = await fetch(twitchUri, {
 			method: 'get',
 			headers: {
 				'Client-ID': config.twitch.clientId,
 				'User-Agent': userAgent,
-				'Authorization': 'Bearer ' + config.twitch.oauthToken
+				'Authorization': 'Bearer ' + config.twitch.accessToken
 			}
 		})
-        .then(res => res.json())
-		.then(json => {
-			if (json.data.length == 0) {
-				return;
-			}
 
-			console.log("streamerData", json);
-
-			const stream = json.data[0];
-			const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
-
-			const embed = new MessageEmbed()
-				.setColor(randomColor)
-				.setImage(thumbnail)
-				.setAuthor(`${guildMember.user.tag}`, `${guildMember.user.avatarURL}`)
-				.setDescription(`**Streamer:** ${stream.user_name}`)
-				.addField("**Stream Title:**", `${stream.title}`, false)
-				.addField("**Stream URL:**", `${streamUrl}`, false);
-
-			promotionChannel.send({embed});
+		const json = response.json()
+		if (json.data.length == 0) {
 			return;
-		});
-	}
+		}
 
+		console.log("streamerData", json);
+
+		const stream = json.data[0];
+		const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
+
+		const embed = new MessageEmbed()
+			.setColor(randomColor)
+			.setImage(thumbnail)
+			.setAuthor(`${guildMember.user.tag}`, `${guildMember.user.avatarURL}`)
+			.setDescription(`**Streamer:** ${stream.user_name}`)
+			.addField("**Stream Title:**", `${stream.title}`, false)
+			.addField("**Stream URL:**", `${streamUrl}`, false);
+
+		promotionChannel.send({embed});
+	}
 }

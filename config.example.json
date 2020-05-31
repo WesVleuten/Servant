@@ -1,7 +1,8 @@
 {
 	"botOwnerUserId": "",
 	"twitch": {
-		"clientId": ""
+		"clientId": "",
+		"accessToken": ""
 	},
 	"discord": {
 		"clientId": "",

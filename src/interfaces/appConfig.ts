@@ -7,7 +7,7 @@ export default interface ApplicationConfig {
 
 export interface TwitchConfig {
 	clientId: string;
-	oauthToken: string;
+	accessToken: string;
 }
 
 export interface DatabaseConfig {
