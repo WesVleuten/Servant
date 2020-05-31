@@ -5,10 +5,7 @@ import ServerSettingsRepository from "../repository/severSettings";
 export default async function ReadyEvent(discordClient: DiscordClient) {
 	Logger.info(`Ready to serve, found ${discordClient.guilds.cache.size} guilds`);
 
-	discordClient.guilds.cache.forEach(guild => {
-		CheckGuild(guild.id)
-	});
-
+	await Promise.all(discordClient.guilds.cache.map(guild => CheckGuild(guild.id)))
 	async function CheckGuild(guildId: any) {
 		Logger.info(`Checking for guild ${guildId}`);
 	
