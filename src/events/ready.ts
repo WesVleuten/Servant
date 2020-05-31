@@ -6,24 +6,28 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 	Logger.info(`Ready to serve, found ${discordClient.guilds.cache.size} guilds`);
 
 	discordClient.guilds.cache.forEach(guild => {
-		Logger.info(`Checking for guild ${guild.id}`);
-		ServerSettingsRepository.GetByGuildId(guild.id).then(serverSettings => {
-			if (serverSettings === null) {
-				ServerSettingsRepository.Save({
-					id: 0,
-					guildId: guild.id,
-					deleted: null,
-					prefix: ';',
-					logChannel: null,
-					modLogChannel: null,
-					systemNotice: true,
-					streamLiveRole: null,
-					streamShout: null,
-					adminRole: null, 
-					moderatorRole: null,
-				});
-				Logger.info(`Created guild ${guild.id}`);
-			}
-		});
+		CheckGuild(guild.id)
 	});
+
+	async function CheckGuild(guildId: any) {
+		Logger.info(`Checking for guild ${guildId}`);
+	
+		const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId)
+		if (serverSettings === null) {
+			ServerSettingsRepository.Save({
+				id: 0,
+				guildId: guildId,
+				deleted: null,
+				prefix: ';',
+				logChannel: null,
+				modLogChannel: null,
+				systemNotice: true,
+				streamLiveRole: null,
+				streamShout: null,
+				adminRole: null, 
+				moderatorRole: null,
+			});
+			Logger.info(`Created guild ${guildId}`);
+		}
+	}
 }
