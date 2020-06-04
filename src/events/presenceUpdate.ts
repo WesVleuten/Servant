@@ -58,7 +58,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		const twitchUri = `https://api.twitch.tv/helix/streams?user_login=${streamUsername}`;
 		const userAgent = "Servant"
 
-		//await sleep(2 * 60 * 1000);
+		await sleep(2 * 60 * 1000);
 		fetch(twitchUri, {
 			method: 'get',
 			headers: {
