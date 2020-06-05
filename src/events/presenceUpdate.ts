@@ -4,6 +4,7 @@ import Logger from "../lib/log";
 import { getTextChannel } from "../lib/util";
 import config from "../lib/config";
 import fetchRetry from "../lib/fetchRetry";
+import fetch from "node-fetch";
 
 export default async function PresenceUpdateEvent(discordClient: DiscordClient, oldPresence: Presence | null, newPresence: Presence) {
 	const randomColor = "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16));
@@ -74,14 +75,13 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 				retryOn: async function (attempt, error, response) {
 					const clone = response?.clone()
 					if (!clone) {
-						Logger.error(`no response, attempt number ${attempt + 1}`);
+						Logger.error(`No response, attempt ${attempt + 1}`);
 						return true;
 					}
 	
 					const responseData = await clone.json()
-					Logger.error(responseData)
 					if (responseData.data.length == 0) {
-						Logger.error(`streamer is offline, attempt number ${attempt + 1}`);
+						Logger.error(`Streamer is offline, attempt ${attempt + 1}`);
 						return true;
 					}
 	
@@ -112,12 +112,12 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 				.addField("**Stream Title:**", `${stream.title}`, false)
 				.addField("**Stream URL:**", `${streamUrl}`, false);
 				
-			promotionChannel.send({embed});
-
+			promotionChannel.send({ embed });
+			
 		} catch(e) {
 			Logger.error(`PresenceUpdate Caught Error`, e);
 			return;
 		}
-		
 	}
+
 }
