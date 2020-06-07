@@ -1,7 +1,9 @@
 import { ICommand, PermissionLevel } from "./base";
 import { Message, Client, MessageEmbed } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
-import { Server } from "http";
+import WhiteListedGamesRepository from "../repository/whiteListedGames";
+import config from "../lib/config";
+import fetch from "node-fetch";
 
 export default class ConfigCommand implements ICommand {
 
@@ -10,13 +12,14 @@ export default class ConfigCommand implements ICommand {
 	permissionLevel = PermissionLevel.Administrator;
 	guildOnly = false;
 
-	usageText = ";config [set] [key] [value]";
+	usageText = ";config [set/add/remove] [key] [value]";
 	helpText = "Shows bot stats";
 
 	async run(discordClient: Client, message: Message, args: string[]) {
 		const guildId = message.guild?.id;
 		const ss = await ServerSettingsRepository.GetByGuildId(guildId);
-		if (!ss || !message.guild) {
+		const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
+		if (!ss || !wlg || !message.guild) {
 			return;
 		}
 
@@ -54,6 +57,11 @@ export default class ConfigCommand implements ICommand {
 				modRoleString = `${modRole?.name || 'ERR-404'} (${ss.moderatorRole})`;
 			}
 
+			let whiteListedGamesString = 'Off';
+			if (wlg.length > 0) {
+				whiteListedGamesString = wlg.map(g => g.name).join("\n");
+			}
+
 			const embed = new MessageEmbed()
 				.setColor(0x33CC33)
 				.setTimestamp()
@@ -64,12 +72,9 @@ export default class ConfigCommand implements ICommand {
 				.addField("streamShout", streamShoutString)
 				.addField("adminRole", adminRoleString)
 				.addField("moderatorRole", modRoleString)
+				.addField("whiteListedGames", whiteListedGamesString)
 				.setFooter(`ServerID: ${ss.id}`);
 			message.reply({embed});
-			return;
-		}
-
-		if (args.length != 3) {
 			return;
 		}
 
@@ -136,14 +141,75 @@ export default class ConfigCommand implements ICommand {
 					ss.moderatorRole = modRole.id;
 				}
 			}
+		}
 
-			if (await ServerSettingsRepository.Save(ss)) {
-				message.reply('Done');
-			} else {
-				message.reply('Unkown error');
+		if (args.length > 3 && args[0] == 'add') {
+			const key = args[1];
+			const value = args.slice(2).join(" ");
+
+			if (key == 'whiteListedGames') {
+				if (value == 'null') {
+					message.reply('No game specified');
+					return;
+				} else {
+					const authUrl = `https://id.twitch.tv/oauth2/token?client_id=${config.twitch.clientId}&client_secret=${config.twitch.clientSecret}&grant_type=client_credentials`;
+					const authResponse = await fetch(authUrl, {
+						method: 'post',
+					});
+			
+					const authJson = await authResponse.json();
+					if (authResponse.status !== 200) {
+						return;
+					}
+			
+					const twitchUri = `https://api.twitch.tv/helix/games?name=${value}`;
+					const userAgent = "Servant"
+		
+					const gameResponse = await fetch(twitchUri, {
+						method: 'get',
+						headers: {
+							'Client-ID': config.twitch.clientId,
+							'User-Agent': userAgent,
+							'Authorization': 'Bearer ' + authJson.access_token
+						}
+					})
+			
+					const gameJson = await gameResponse.json();
+					if (gameJson.data.length == 0) {
+						return;
+					}
+			
+					const game = gameJson.data[0];
+					WhiteListedGamesRepository.Add(guildId, game.id, game.name);
+				}
 			}
 		}
 
+		if (args.length > 3 && args[0] == 'remove') {
+			const key = args[1];
+			const value = args.slice(2).join(" ");
+
+			if (key == 'whiteListedGames') {
+				if (value == 'null') {
+					message.reply('No game specified');
+					return;
+				} else {
+					if (wlg.find(g => g.name == value)) {
+						WhiteListedGamesRepository.Remove(guildId, value);
+					} else { 
+						message.reply('Game is not in whitelist');
+						return;
+					}
+				}
+			}
+		}
+
+		if (await ServerSettingsRepository.Save(ss)) {
+			message.reply('Done');
+		} else {
+			message.reply('Unkown error');
+		}
+			
 	}
 
 }

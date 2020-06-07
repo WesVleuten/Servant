@@ -1,5 +1,6 @@
 import { Client as DiscordClient, Presence, MessageEmbed } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
+import WhiteListedGamesRepository from "../repository/whiteListedGames";
 import Logger from "../lib/log";
 import { getTextChannel } from "../lib/util";
 import config from "../lib/config";
@@ -100,10 +101,19 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 				Logger.error(`Streamer appears to be offline`);
 				return;
 			}
-	
+
+			const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
+			if (!wlg) {
+				return;
+			}
+
 			const stream = statusJson.data[0];
-			const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
+			if (wlg.length > 0 && wlg.find(g => g.id == stream.game_id) == undefined) { 
+				Logger.error(`Game is not whitelisted`);
+				return;
+			}
 	
+			const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
 			const embed = new MessageEmbed()
 				.setColor(randomColor)
 				.setImage(thumbnail)

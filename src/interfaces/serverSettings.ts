@@ -14,5 +14,5 @@ export default interface ServerSettings {
 	streamShout: string|null;
 
 	adminRole: string|null;
-	moderatorRole: string|null;
+	moderatorRole: string | null;
 }
