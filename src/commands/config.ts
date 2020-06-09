@@ -2,8 +2,7 @@ import { ICommand, PermissionLevel } from "./base";
 import { Message, Client, MessageEmbed } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
 import WhiteListedGamesRepository from "../repository/whiteListedGames";
-import config from "../lib/config";
-import fetch from "node-fetch";
+import TwitchClient from "../lib/twitch";
 
 export default class ConfigCommand implements ICommand {
 
@@ -152,34 +151,13 @@ export default class ConfigCommand implements ICommand {
 					message.reply('No game specified');
 					return;
 				} else {
-					const authUrl = `https://id.twitch.tv/oauth2/token?client_id=${config.twitch.clientId}&client_secret=${config.twitch.clientSecret}&grant_type=client_credentials`;
-					const authResponse = await fetch(authUrl, {
-						method: 'post',
-					});
-			
-					const authJson = await authResponse.json();
-					if (authResponse.status !== 200) {
+					const twitch = TwitchClient.getInstance()
+					const game = await twitch.getGameData(value);
+					if (!game) { 
+						message.reply('Game does not exist for Twitch');
 						return;
 					}
-			
-					const twitchUri = `https://api.twitch.tv/helix/games?name=${value}`;
-					const userAgent = "Servant"
-		
-					const gameResponse = await fetch(twitchUri, {
-						method: 'get',
-						headers: {
-							'Client-ID': config.twitch.clientId,
-							'User-Agent': userAgent,
-							'Authorization': 'Bearer ' + authJson.access_token
-						}
-					})
-			
-					const gameJson = await gameResponse.json();
-					if (gameJson.data.length == 0) {
-						return;
-					}
-			
-					const game = gameJson.data[0];
+					
 					WhiteListedGamesRepository.Add(guildId, game.id, game.name);
 				}
 			}
@@ -211,5 +189,5 @@ export default class ConfigCommand implements ICommand {
 		}
 			
 	}
-
+	
 }

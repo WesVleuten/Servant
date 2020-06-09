@@ -1,5 +1,4 @@
 import * as MySQL from 'mysql';
-import Config from './config';
 import config from './config';
 
 export default class Database {
@@ -16,10 +15,10 @@ export default class Database {
 
 	constructor() {
 		this.connection = MySQL.createConnection({
-			host: Config.database.host,
+			host: config.database.host,
 			user: config.database.user,
 			password: config.database.password,
-			database: Config.database.database,
+			database: config.database.database,
 		});
 	}
 
