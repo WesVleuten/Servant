@@ -35,7 +35,26 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		}
 		if (guildMember.roles.cache.has(serverSettings.streamLiveRole) && streamingActivity === undefined) {
 			await guildMember.roles.remove(liverole)
-		} else if (streamingActivity !== undefined) {
+		} else if (streamingActivity !== undefined && streamingActivity.url) {
+			const streamUrl = streamingActivity.url;
+			const streamUsername = streamUrl.substr(22);
+			
+			const twitch = TwitchClient.getInstance()
+			const stream = await twitch.getStreamer(streamUsername);
+			if (!stream) { 
+				return;
+			}
+
+			const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
+			if (!wlg) {
+				return;
+			}
+
+			if (wlg.length > 0 && wlg.find(g => g.id === stream.game_id) === undefined) { 
+				Logger.error(`Game is not whitelisted`);
+				return;
+			}	
+
 			await guildMember.roles.add(liverole)
 		}
 	}
