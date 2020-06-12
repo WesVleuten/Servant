@@ -9,7 +9,7 @@ export default class WhiteListedGamesRepository {
 		}
 		const database = Database.getInstance()
 
-    return await database.query<whiteListedGame[]>("SELECT * FROM WhiteListedGames WHERE guildId = ?", [guildId]);
+		return await database.query<whiteListedGame[]>("SELECT * FROM WhiteListedGames WHERE guildId = ?", [guildId]);
   }
   
 	static async Add(guildId: string | undefined, id: string, name: string) {
