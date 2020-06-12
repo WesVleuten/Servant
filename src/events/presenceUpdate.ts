@@ -26,6 +26,8 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		return;
 	}
 
+	const whiteListed = await CheckGameWhitelisted(streamingActivity);
+
 	if (serverSettings.streamLiveRole !== null) {
 		const liverole = await guild.roles.fetch(serverSettings.streamLiveRole);
 
@@ -33,34 +35,16 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 			Logger.error(`Role with key 'liverole' was not found`);
 			return;
 		}
+
 		if (guildMember.roles.cache.has(serverSettings.streamLiveRole) && streamingActivity === undefined) {
 			await guildMember.roles.remove(liverole)
-		} else if (streamingActivity !== undefined && streamingActivity.url) {
-			const streamUrl = streamingActivity.url;
-			const streamUsername = streamUrl.substr(22);
-			
-			const twitch = TwitchClient.getInstance()
-			const stream = await twitch.getStreamer(streamUsername);
-			if (!stream) { 
-				return;
-			}
-
-			const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
-			if (!wlg) {
-				return;
-			}
-
-			if (wlg.length > 0 && wlg.find(g => g.id === stream.game_id) === undefined) { 
-				Logger.error(`Game is not whitelisted`);
-				return;
-			}	
-
+		} else if (whiteListed) {
 			await guildMember.roles.add(liverole)
 		}
 	}
 
 	if (serverSettings.streamShout !== null) {
-		if (!oldPresence || !newPresence || wasStreaming || !streamingActivity || !streamingActivity.url) {
+		if (!oldPresence || !newPresence || wasStreaming || !streamingActivity || !streamingActivity.url || !whiteListed) {
 			return;
 		}
 
@@ -79,16 +63,6 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 			return;
 		}
 
-		const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
-		if (!wlg) {
-			return;
-		}
-
-		if (wlg.length > 0 && wlg.find(g => g.id === stream.game_id) === undefined) { 
-			Logger.error(`Game is not whitelisted`);
-			return;
-		}
-
 		const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
 		const embed = new MessageEmbed()
 			.setColor(randomColor)
@@ -100,6 +74,32 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 			
 		promotionChannel.send({ embed });
 			
+	}
+
+	async function CheckGameWhitelisted(streamingActivity: any): Promise<boolean> {
+		if (streamingActivity === undefined || !streamingActivity.url) { 
+			return false;
+		}
+
+		const streamUrl = streamingActivity.url;
+		const streamUsername = streamUrl.substr(22);
+		
+		const twitch = TwitchClient.getInstance()
+		const stream = await twitch.getStreamer(streamUsername);
+		if (!stream) { 
+			return false;
+		}
+
+		const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
+		if (!wlg) {
+			return false;
+		}
+
+		if (wlg.length > 0 && wlg.find(g => g.id === stream.game_id) === undefined) {
+			return false;
+		}	
+
+		return true;
 	}
 
 }
