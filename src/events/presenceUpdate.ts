@@ -92,7 +92,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 
 		const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
 		if (!wlg) {
-			return false;
+			return true;
 		}
 
 		if (wlg.length > 0 && wlg.find(g => g.id === stream.game_id) === undefined) {
