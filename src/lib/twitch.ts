@@ -4,16 +4,16 @@ import fetch from "node-fetch";
 
 export default class TwitchClient {
 
-	private accessToken: string;
+  private accessToken: string;
   private expires: number;
 
   private static _instance: TwitchClient;
-	public static getInstance() {
-		if (this._instance == null) {
-			this._instance = new TwitchClient();
-		}
-		return this._instance;
-	}
+  public static getInstance() {
+    if (this._instance == null) {
+      this._instance = new TwitchClient();
+    }
+    return this._instance;
+  }
 
   async getAccessToken(): Promise<string | null> {
     if (this.expires > Date.now()) {
@@ -32,7 +32,7 @@ export default class TwitchClient {
 
     this.accessToken = authJson.access_token;
     this.expires = Date.now() + authJson.expires_in;
-    
+
     return this.accessToken;
   }
 
