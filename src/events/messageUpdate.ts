@@ -34,10 +34,14 @@ export default async function MessageUpdateEvent(discordClient: DiscordClient, o
 		.setColor(0xFFA500)
 		.setTimestamp()
 		.setAuthor("Message Edited")
+		.setFooter(`User ID: ${newMessage.author.id}`)
 		.addField("User", `${newMessage.author.tag}`, true)
-		.addField("Channel", `${oldMessage.channel}`, true)
-		.addField("Before", `${oldMessage.content}`, false)
-		.addField("After", `${newMessage.content}`, false)
-		.setFooter(`User ID: ${newMessage.author.id}`);
+		.addField("Channel", `${oldMessage.channel}`, true);
+	
+	if (oldMessage.content) { 
+		embed.addField("Before", `${oldMessage.content}`, false)
+	}
+	embed.addField("After", `${newMessage.content}`, false);
+	
 	channel.send({embed});
 }
