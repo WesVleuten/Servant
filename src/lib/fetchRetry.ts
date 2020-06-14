@@ -14,7 +14,7 @@ export default async function fetchRetry(input: RequestInfo, init: RequestInitEx
 		retries,
 		retryDelay,
 	} = init;
-	
+
 	const retry = async attempt => {
 		if (attempt < retries) {
 			await sleep(retryDelay);
@@ -27,13 +27,13 @@ export default async function fetchRetry(input: RequestInfo, init: RequestInitEx
 	const tryFetch = async attempt => {
 		try {
 			const response = await fetch(input, init)
-		
+
 			if (await retryOn(attempt, null, response)) {
 				return retry(attempt);
 			} else {
 				return response;
 			}
-		} catch(error) {
+		} catch (error) {
 			if (await retryOn(attempt, error, null)) {
 				return retry(attempt);
 			} else {

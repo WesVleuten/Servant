@@ -61,38 +61,38 @@ export default class TwitchClient {
 		const twitchUri = `https://api.twitch.tv/helix/streams?user_login=${name}`;
 		const userAgent = "Servant"
 
-    try {
-      const statusResponse = await fetchRetry(twitchUri, {
-        retries: 10,
-        retryDelay: 30000,
-        retryOn: async function (attempt, error, response) {
-          const clone = response?.clone()
-          if (!clone) {
-            return true;
-          }
+		try {
+			const statusResponse = await fetchRetry(twitchUri, {
+				retries: 10,
+				retryDelay: 30000,
+				retryOn: async function (attempt, error, response) {
+					const clone = response?.clone()
+					if (!clone) {
+						return true;
+					}
 
-          const responseData = await clone.json()
-          if (responseData.data.length == 0) {
-            return true;
-          }
+					const responseData = await clone.json()
+					if (responseData.data.length == 0) {
+						return true;
+					}
 
-          return false;
-        },
-        method: 'get',
-        headers: {
-          'Client-ID': config.twitch.clientId,
-          'User-Agent': userAgent,
-          'Authorization': 'Bearer ' + await this.getAccessToken()
-        }
-      })
+					return false;
+				},
+				method: 'get',
+				headers: {
+					'Client-ID': config.twitch.clientId,
+					'User-Agent': userAgent,
+					'Authorization': 'Bearer ' + await this.getAccessToken()
+				}
+			})
 
-      const statusJson = await statusResponse.json();
-      if (statusJson.data.length == 0) {
-        return null;
-      }
-  
-      return statusJson.data[0];
-    } catch(e) {
+			const statusJson = await statusResponse.json();
+			if (statusJson.data.length == 0) {
+				return null;
+			}
+	
+			return statusJson.data[0];
+		} catch(e) {
 			return null;
 		}
 	}
