@@ -33,9 +33,9 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		.setColor(0xFF0000)
 		.setAuthor("Message Deleted")
 		.setTimestamp()
+		.setFooter(`User ID: ${message.author.id}`)
 		.addField("User", `${message.author.tag}`, true)
 		.addField("Channel", `${message.channel}`, true)
-		.addField("Message Deleted", `${message.content}`, false)
-		.setFooter(`User ID: ${message.author.id}`);
+		.addField("Message Deleted", `${message.content}`, false);
 	channel.send({embed});
 }
