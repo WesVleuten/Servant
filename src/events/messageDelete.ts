@@ -27,7 +27,7 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 	if (channel === null) {
 		Logger.error(`Couldnt get log channel for server ${message?.guild?.id}`);
 		return;
-	}
+  }
 
 	const embed = new MessageEmbed()
 		.setColor(0xFF0000)
@@ -35,7 +35,11 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		.setTimestamp()
 		.setFooter(`User ID: ${message.author.id}`)
 		.addField("User", `${message.author.tag}`, true)
-		.addField("Channel", `${message.channel}`, true)
-		.addField("Message Deleted", `${message.content}`, false);
+		.addField("Channel", `${message.channel}`, true);
+  
+  if (message.content) { 
+    embed.addField("Message Deleted", `${message.content}`, false)
+  }
+  
 	channel.send({embed});
 }
