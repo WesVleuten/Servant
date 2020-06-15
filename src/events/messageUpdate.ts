@@ -1,9 +1,10 @@
-import { Client as DiscordClient, Message, MessageEmbed } from "discord.js";
+import { Client as DiscordClient, Message } from "discord.js";
 import ActionLogRepository from "../repository/actionLog";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";
+import createEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function MessageUpdateEvent(discordClient: DiscordClient, oldMessage: Message, newMessage: Message) {
 	if (oldMessage.author.bot) return;
@@ -30,18 +31,31 @@ export default async function MessageUpdateEvent(discordClient: DiscordClient, o
 		return;
 	}
 
-	const embed = new MessageEmbed()
-		.setColor(0xFFA500)
-		.setTimestamp()
-		.setAuthor("Message Edited")
-		.setFooter(`User ID: ${newMessage.author.id}`)
-		.addField("User", `${newMessage.author.tag}`, true)
-		.addField("Channel", `${oldMessage.channel}`, true);
-	
-	if (oldMessage.content) { 
-		embed.addField("Before", `${oldMessage.content}`, false)
-	}
-	embed.addField("After", `${newMessage.content}`, false);
-	
+	const embed = createEmbed({
+		color: 0xFFA500,
+		author: "Message Edited",
+		footer: `User ID: ${newMessage.author.id}`,
+		fields: [
+			{
+				key: "User",
+				value: newMessage.author.tag,
+				inline: true,
+			},
+			{
+				key: "Channel",
+				value: `${oldMessage.channel}`,
+				inline: true,
+			},
+			{
+				key: "Before",
+				value: oldMessage.content,
+			},
+			{
+				key: "After",
+				value: newMessage.content,
+			},
+		],
+	});
+
 	channel.send({embed});
 }

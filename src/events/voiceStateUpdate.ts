@@ -1,9 +1,10 @@
-import { Client as DiscordClient, VoiceState, MessageEmbed } from "discord.js";
+import { Client as DiscordClient, VoiceState } from "discord.js";
 import ActionLogRepository from "../repository/actionLog";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";
+import createEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function VoiceStateUpdateEvent(discordClient: DiscordClient, oldState: VoiceState, newState: VoiceState) {
 	if (oldState.channelID === newState.channelID) {
@@ -33,14 +34,22 @@ export default async function VoiceStateUpdateEvent(discordClient: DiscordClient
 			from: oldState.channelID,
 			to: newState.channelID,
 		});
-
-		const embed = new MessageEmbed()
-			.setColor(0x7CFC00)
-			.setAuthor(`${newState.member?.user?.tag}`)
-			.setTimestamp()
-			.setFooter(`User ID: ${newState.id}`)
-			.addField("Has switched voice channel to:", `${newState.channel?.name}`, false)
-			.addField("Previous voice channel:", `${oldState.channel?.name}`, false);
+		
+		const embed = createEmbed({
+			color: 0x7CFC00,
+			author: `${newState.member?.user?.tag}`,
+			footer: `User ID: ${newState.id}`,
+			fields: [
+				{
+					key: "Has switched voice channel to:",
+					value: `${newState.channel?.name}`,
+				},
+				{
+					key: "Previous voice channel:",
+					value: `${oldState.channel?.name}`,
+				},
+			],
+		});
 
 		logchannel.send({embed});
 		return;
@@ -50,12 +59,18 @@ export default async function VoiceStateUpdateEvent(discordClient: DiscordClient
 		// add action to database
 		await ActionLogRepository.Add(serverSettings.id, oldState.member?.id || null, ActionType.VoiceChatLeave, oldState.channelID || null, null);
 
-		const embed = new MessageEmbed()
-			.setColor(0xFF0000)
-			.setAuthor(`${newState.member?.user?.tag}`)
-			.setTimestamp()
-			.setFooter(`User ID: ${newState.member?.id}`)
-			.addField("Has left the voice channel:", `${oldState.channel?.name}`, true);
+		const embed = createEmbed({
+			color: 0xFF0000,
+			author: `${newState.member?.user?.tag}`,
+			footer: `User ID: ${newState.id}`,
+			fields: [
+				{
+					key: "Has left the voice channel:",
+					value: `${oldState.channel?.name}`,
+					inline: true,
+				},
+			],
+		});
 
 		logchannel.send({embed});
 		return;
@@ -65,12 +80,18 @@ export default async function VoiceStateUpdateEvent(discordClient: DiscordClient
 		// add action to database
 		await ActionLogRepository.Add(serverSettings.id, oldState.member?.id || null, ActionType.VoiceChatJoin, newState.channelID || null, null);
 
-		const embed = new MessageEmbed()
-			.setColor(0x7CFC00)
-			.setAuthor(`${newState.member?.user?.tag}`)
-			.setTimestamp()
-			.setFooter(`User ID: ${newState.member?.id}`)
-			.addField("Has joined the voice channel:", `${newState.channel?.name}`, true);
+		const embed = createEmbed({
+			color: 0x7CFC00,
+			author: `${newState.member?.user?.tag}`,
+			footer: `User ID: ${newState.member?.id}`,
+			fields: [
+				{
+					key: "Has joined the voice channel:",
+					value: `${newState.channel?.name}`,
+					inline: true,
+				},
+			],
+		});
 
 		logchannel.send({embed});
 		return;

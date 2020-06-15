@@ -1,13 +1,12 @@
-import { Client as DiscordClient, Presence, MessageEmbed } from "discord.js";
+import { Client as DiscordClient, Presence } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
 import WhiteListedGamesRepository from "../repository/whiteListedGames";
 import Logger from "../lib/log";
 import TwitchClient from "../lib/twitch";
 import { getTextChannel } from "../lib/util";
+import createEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function PresenceUpdateEvent(discordClient: DiscordClient, oldPresence: Presence | null, newPresence: Presence) {
-	const randomColor = "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16));
-
 	const guildId = newPresence.guild?.id;
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
 	if (serverSettings === null) {
@@ -64,13 +63,24 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		}
 
 		const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
-		const embed = new MessageEmbed()
-			.setColor(randomColor)
-			.setImage(thumbnail)
-			.setAuthor(`${guildMember.displayName}`, `${guildMember.user.displayAvatarURL()}`)
-			.setDescription(`**Streamer:** ${stream.user_name}`)
-			.addField("**Stream Title:**", `${stream.title}`, false)
-			.addField("**Stream URL:**", `${streamUrl}`, false);
+
+		const embed = createEmbed({
+			color: 'random',
+			author: `${guildMember.displayName}`,
+			authorIcon: `${guildMember.user.displayAvatarURL()}`,
+			description: `**Streamer:** ${stream.user_name}`,
+			image: thumbnail,
+			fields: [
+				{
+					key: "**Stream Title:**",
+					value: `${stream.title}`,
+				},
+				{
+					key: "**Stream URL:**",
+					value: `${streamUrl}`,
+				},
+			],
+		});
 			
 		promotionChannel.send({ embed });
 			

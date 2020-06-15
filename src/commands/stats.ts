@@ -1,6 +1,7 @@
 import { ICommand, PermissionLevel } from "./base";
-import { Message, Client, MessageEmbed, version as DiscordVersion } from "discord.js";
+import { Message, Client, version as DiscordVersion } from "discord.js";
 import * as fs from 'fs-extra';
+import createEmbed from "../wrapper/discord/messageEmbed";
 
 async function getBuildHash() {
 	try {
@@ -61,16 +62,39 @@ export default class StatsCommand implements ICommand {
 		const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
 		const uptime = await getDuration(discordClient.uptime);
 
-		const embed = new MessageEmbed()
-			.setColor(0x33CC33)
-			.setTimestamp()
-			.setAuthor("Bot statistics")
-			.addField("Build", `${build}`, true)
-			.addField("Memory Usage", `${memoryUsage} MB`, true)
-			.addField("Uptime", `${uptime}`, false)
-			.addField("Discord.js", `${DiscordVersion}`, true)
-			.addField("Node", `${process.version}`, true)
-			.setFooter(`Servant developed by Westar, originally by Danskbog`);
+		const embed = createEmbed({
+			color: 0x33CC33,
+			author: "Bot statistics",
+			footer: `Servant developed by Westar, originally by Danskbog`,
+			fields: [
+				{
+					key: "Build",
+					value: `${build}`,
+					inline: true,
+				},
+				{
+					key: "Memory Usage",
+					value: `${memoryUsage} MB`,
+					inline: true,
+				},
+				{
+					key: "Uptime",
+					value: `${uptime}`,
+					inline: false,
+				},
+				{
+					key: "Discord.js",
+					value: `${DiscordVersion}`,
+					inline: true,
+				},
+				{
+					key: "Node",
+					value: `${process.version}`,
+					inline: true,
+				},
+			],
+		});
+
 		message.channel.send({embed});
 	}
 

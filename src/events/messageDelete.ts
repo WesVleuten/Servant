@@ -1,9 +1,10 @@
-import { Client as DiscordClient, Message, MessageEmbed } from "discord.js";
+import { Client as DiscordClient, Message } from "discord.js";
 import ActionLogRepository from "../repository/actionLog";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";
+import createEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function MessageDeleteEvent(discordClient: DiscordClient, message: Message) {
 	if (message.author.bot) return;
@@ -29,17 +30,27 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		return;
 	}
 
-	const embed = new MessageEmbed()
-		.setColor(0xFF0000)
-		.setAuthor("Message Deleted")
-		.setTimestamp()
-		.setFooter(`User ID: ${message.author.id}`)
-		.addField("User", `${message.author.tag}`, true)
-		.addField("Channel", `${message.channel}`, true);
-	
-	if (message.content) { 
-		embed.addField("Message Deleted", `${message.content}`, false)
-	}
+	const embed = createEmbed({
+		color: 0xFF0000,
+		author: "Message Deleted",
+		footer: `User ID: ${message.author.id}`,
+		fields: [
+			{
+				key: "User",
+				value: message.author.tag,
+				inline: true,
+			},
+			{
+				key: "Channel",
+				value: `${message.channel}`,
+				inline: true,
+			},
+			{
+				key: "Message Deleted",
+				value: message.content,
+			},
+		],
+	});
 	
 	channel.send({embed});
 }
