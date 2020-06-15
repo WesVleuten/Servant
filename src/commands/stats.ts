@@ -70,7 +70,7 @@ export default class StatsCommand implements ICommand {
 			.addField("Uptime", `${uptime}`, false)
 			.addField("Discord.js", `${DiscordVersion}`, true)
 			.addField("Node", `${process.version}`, true)
-			.setFooter(`Servant developed by Westar, originally by Danskbog`);
+			.setFooter(`Servant developed by Westar and Notfood, originally by Danskbog`);
 		message.channel.send({embed});
 	}
 
