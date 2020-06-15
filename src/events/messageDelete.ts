@@ -4,7 +4,7 @@ import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";
-import createEmbed from "../wrapper/discord/messageEmbed";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function MessageDeleteEvent(discordClient: DiscordClient, message: Message) {
 	if (message.author.bot) return;
@@ -30,7 +30,7 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		return;
 	}
 
-	const embed = createEmbed({
+	const embed = createMessageEmbed({
 		color: 0xFF0000,
 		author: "Message Deleted",
 		footer: `User ID: ${message.author.id}`,

@@ -4,7 +4,7 @@ import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";
-import createEmbed from "../wrapper/discord/messageEmbed";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function MessageUpdateEvent(discordClient: DiscordClient, oldMessage: Message, newMessage: Message) {
 	if (oldMessage.author.bot) return;
@@ -31,7 +31,7 @@ export default async function MessageUpdateEvent(discordClient: DiscordClient, o
 		return;
 	}
 
-	const embed = createEmbed({
+	const embed = createMessageEmbed({
 		color: 0xFFA500,
 		author: "Message Edited",
 		footer: `User ID: ${newMessage.author.id}`,

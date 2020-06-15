@@ -1,7 +1,7 @@
 import { ICommand, PermissionLevel } from "./base";
 import { Message, Client, version as DiscordVersion } from "discord.js";
 import * as fs from 'fs-extra';
-import createEmbed from "../wrapper/discord/messageEmbed";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 async function getBuildHash() {
 	try {
@@ -62,7 +62,7 @@ export default class StatsCommand implements ICommand {
 		const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
 		const uptime = await getDuration(discordClient.uptime);
 
-		const embed = createEmbed({
+		const embed = createMessageEmbed({
 			color: 0x33CC33,
 			author: "Bot statistics",
 			footer: `Servant developed by Westar, originally by Danskbog`,

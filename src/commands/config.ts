@@ -3,7 +3,7 @@ import { Message, Client } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
 import WhiteListedGamesRepository from "../repository/whiteListedGames";
 import TwitchClient from "../lib/twitch";
-import createEmbed from "../wrapper/discord/messageEmbed";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 export default class ConfigCommand implements ICommand {
 
@@ -62,7 +62,7 @@ export default class ConfigCommand implements ICommand {
 				whiteListedGamesString = wlg.map(g => g.name).join("\n");
 			}
 
-			const embed = createEmbed({
+			const embed = createMessageEmbed({
 				color: 0x33CC33,
 				author: "Bot Config",
 				footer: `ServerID: ${ss.id}`,

@@ -4,7 +4,7 @@ import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";
-import createEmbed from "../wrapper/discord/messageEmbed";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function VoiceStateUpdateEvent(discordClient: DiscordClient, oldState: VoiceState, newState: VoiceState) {
 	if (oldState.channelID === newState.channelID) {
@@ -35,7 +35,7 @@ export default async function VoiceStateUpdateEvent(discordClient: DiscordClient
 			to: newState.channelID,
 		});
 		
-		const embed = createEmbed({
+		const embed = createMessageEmbed({
 			color: 0x7CFC00,
 			author: `${newState.member?.user?.tag}`,
 			footer: `User ID: ${newState.id}`,
@@ -59,7 +59,7 @@ export default async function VoiceStateUpdateEvent(discordClient: DiscordClient
 		// add action to database
 		await ActionLogRepository.Add(serverSettings.id, oldState.member?.id || null, ActionType.VoiceChatLeave, oldState.channelID || null, null);
 
-		const embed = createEmbed({
+		const embed = createMessageEmbed({
 			color: 0xFF0000,
 			author: `${newState.member?.user?.tag}`,
 			footer: `User ID: ${newState.id}`,
@@ -80,7 +80,7 @@ export default async function VoiceStateUpdateEvent(discordClient: DiscordClient
 		// add action to database
 		await ActionLogRepository.Add(serverSettings.id, oldState.member?.id || null, ActionType.VoiceChatJoin, newState.channelID || null, null);
 
-		const embed = createEmbed({
+		const embed = createMessageEmbed({
 			color: 0x7CFC00,
 			author: `${newState.member?.user?.tag}`,
 			footer: `User ID: ${newState.member?.id}`,

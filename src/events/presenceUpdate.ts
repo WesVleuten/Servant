@@ -4,7 +4,7 @@ import WhiteListedGamesRepository from "../repository/whiteListedGames";
 import Logger from "../lib/log";
 import TwitchClient from "../lib/twitch";
 import { getTextChannel } from "../lib/util";
-import createEmbed from "../wrapper/discord/messageEmbed";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 export default async function PresenceUpdateEvent(discordClient: DiscordClient, oldPresence: Presence | null, newPresence: Presence) {
 	const guildId = newPresence.guild?.id;
@@ -64,7 +64,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 
 		const thumbnail = stream.thumbnail_url.replace('{width}x{height}', '384x216');
 
-		const embed = createEmbed({
+		const embed = createMessageEmbed({
 			color: 'random',
 			author: `${guildMember.displayName}`,
 			authorIcon: `${guildMember.user.displayAvatarURL()}`,

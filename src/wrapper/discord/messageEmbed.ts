@@ -24,12 +24,12 @@ function randomColor() {
 
 function safeFieldValue(input: string): string {
 	if (input == null || input == '') {
-		return "**Empty String**";
+		return "**Empty**";
 	}
 	return input;
 }
 
-export default function createEmbed(input: Embed): MessageEmbed {
+export default function createMessageEmbed(input: Embed): MessageEmbed {
 
 	const embed = new MessageEmbed();
 
