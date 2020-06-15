@@ -1,4 +1,4 @@
-import { Client as DiscordClient, Message, MessageEmbed } from "discord.js";
+import { Client as DiscordClient, Message } from "discord.js";
 import ActionLogRepository from "../repository/actionLog";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";

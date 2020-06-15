@@ -1,5 +1,5 @@
 import { ICommand, PermissionLevel } from "./base";
-import { Message, Client, MessageEmbed } from "discord.js";
+import { Message, Client } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
 

@@ -1,8 +1,9 @@
 import { ICommand, PermissionLevel } from "./base";
-import { Message, Client, MessageEmbed } from "discord.js";
+import { Message, Client } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
 import WhiteListedGamesRepository from "../repository/whiteListedGames";
 import TwitchClient from "../lib/twitch";
+import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 export default class ConfigCommand implements ICommand {
 
@@ -61,18 +62,42 @@ export default class ConfigCommand implements ICommand {
 				whiteListedGamesString = wlg.map(g => g.name).join("\n");
 			}
 
-			const embed = new MessageEmbed()
-				.setColor(0x33CC33)
-				.setTimestamp()
-				.setAuthor("Bot Config")
-				.addField("logChannel", logChannelString)
-				.addField("systemNotice", ss.systemNotice ? 'true' : 'false')
-				.addField("streamLiveRole", streamLiveRoleString)
-				.addField("streamShout", streamShoutString)
-				.addField("adminRole", adminRoleString)
-				.addField("moderatorRole", modRoleString)
-				.addField("whiteListedGames", whiteListedGamesString)
-				.setFooter(`ServerID: ${ss.id}`);
+			const embed = createMessageEmbed({
+				color: 0x33CC33,
+				author: "Bot Config",
+				footer: `ServerID: ${ss.id}`,
+				fields: [
+					{
+						key: "logChannel",
+						value: logChannelString,
+					},
+					{
+						key: "systemNotice",
+						value: ss.systemNotice ? 'true' : 'false',
+					},
+					{
+						key: "streamLiveRole",
+						value: streamLiveRoleString,
+					},
+					{
+						key: "streamShout",
+						value: streamShoutString,
+					},
+					{
+						key: "adminRole",
+						value: adminRoleString,
+					},
+					{
+						key: "moderatorRole",
+						value: modRoleString,
+					},
+					{
+						key: "whiteListedGames",
+						value: whiteListedGamesString,
+					},
+				],
+			});
+
 			message.reply({embed});
 			return;
 		}
