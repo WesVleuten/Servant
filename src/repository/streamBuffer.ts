@@ -10,15 +10,15 @@ export default class StreamBuffer {
 
 	private streams: Map<string, Date>;
 	constructor() {
-    this.streams  = new Map<string, Date>();
+		this.streams = new Map<string, Date>();
 	}
 
 	set(userId: string, timestamp: Date): void {
-    this.streams[userId] = timestamp;
-  }
-  
-  get(userId: string): Date|null { 
-    return this.streams[userId];
-  }
+		this.streams[userId] = timestamp;
+	}
+
+	get(userId: string): Date | null {
+		return this.streams[userId];
+	}
 
 }
