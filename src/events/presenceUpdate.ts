@@ -28,7 +28,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 
 	const whiteListed = await CheckGameWhitelisted(streamingActivity);
 	
-	if (serverSettings.streamLiveRole !== null || serverSettings.streamShout !== null) {
+	if ((serverSettings.streamLiveRole !== null || serverSettings.streamShout !== null) && whiteListed) {
 		const sb = StreamBuffer.getInstance()
 		let timeout = sb.get(guildMember.user.id)
 
