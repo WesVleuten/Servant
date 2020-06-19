@@ -37,7 +37,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 				return;
 			} else {
 				timeout = new Date()
-				timeout.setTime(timeout.getTime() + (6*60*60*1000))
+				timeout.setTime(timeout.getTime() + (serverSettings.streamTimeout*3600000))
 				sb.set(guildMember.user.id, timeout)
 			}
 		}

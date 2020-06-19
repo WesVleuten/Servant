@@ -11,19 +11,7 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 	
 		const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId)
 		if (serverSettings === null) {
-			ServerSettingsRepository.Save({
-				id: 0,
-				guildId: guildId,
-				deleted: null,
-				prefix: ';',
-				logChannel: null,
-				modLogChannel: null,
-				systemNotice: true,
-				streamLiveRole: null,
-				streamShout: null,
-				adminRole: null, 
-				moderatorRole: null,
-			});
+			ServerSettingsRepository.Create(guildId);
 			Logger.info(`Created guild ${guildId}`);
 		}
 	}

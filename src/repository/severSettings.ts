@@ -2,6 +2,23 @@ import ServerSettings from "../interfaces/serverSettings";
 import Database from "../lib/database";
 
 export default class ServerSettingsRepository {
+	
+	static async Create(guildId: string): Promise<boolean> {
+		return await this.Save({
+			id: 0,
+			guildId: guildId,
+			deleted: null,
+			prefix: ';',
+			logChannel: null,
+			modLogChannel: null,
+			systemNotice: true,
+			streamLiveRole: null,
+			streamShout: null,
+			streamTimeout: 6,
+			adminRole: null, 
+			moderatorRole: null,
+		});
+	}
 
 	static async GetByGuildId(guildId: string|undefined): Promise<ServerSettings|null> {
 		if (!guildId) {

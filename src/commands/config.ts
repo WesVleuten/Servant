@@ -45,6 +45,8 @@ export default class ConfigCommand implements ICommand {
 				streamShoutString = `${shoutChannel?.name || 'ERR-404'} (${ss.streamShout})`;
 			}
 
+			let streamTimeoutString = ss.streamTimeout + " hours";
+
 			let adminRoleString = 'Off';
 			if (ss.adminRole) {
 				const adminRole = guild.roles.resolve(ss.adminRole)
@@ -82,6 +84,10 @@ export default class ConfigCommand implements ICommand {
 					{
 						key: "streamShout",
 						value: streamShoutString,
+					},
+					{
+						key: "streamTimeout",
+						value: streamTimeoutString,
 					},
 					{
 						key: "adminRole",
@@ -140,6 +146,17 @@ export default class ConfigCommand implements ICommand {
 						return;
 					}
 					ss.streamShout = promotionChannel.id;
+				}
+			} else if (key == 'streamTimeout') {
+				if (value == 'null') {
+					ss.streamTimeout = 0;
+				} else {
+					const timeout = Number(value)
+					if (isNaN(timeout)) { 
+						message.reply('Couldnt parse timeout');
+						return;
+					}
+					ss.streamTimeout = timeout;
 				}
 			} else if (key == 'adminRole') {
 				if (value == 'null') {
