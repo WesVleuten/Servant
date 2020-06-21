@@ -45,7 +45,10 @@ export default class ConfigCommand implements ICommand {
 				streamShoutString = `${shoutChannel?.name || 'ERR-404'} (${ss.streamShout})`;
 			}
 
-			let streamTimeoutString = ss.streamTimeout + " hours";
+			let streamTimeoutString = 'Off';
+			if (ss.streamTimeout > 0) {
+				streamTimeoutString = ss.streamTimeout + ' hours';
+			}
 
 			let adminRoleString = 'Off';
 			if (ss.adminRole) {
