@@ -24,6 +24,7 @@ CREATE TABLE `ServerSettings` (
   `systemNotice` tinyint(1) NOT NULL,
   `streamLiveRole` varchar(255) DEFAULT NULL,
   `streamShout` varchar(255) DEFAULT NULL,
+  `streamTimeout` int(11) DEFAULT NULL,
   `adminRole` varchar(255) DEFAULT NULL,
   `moderatorRole` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)

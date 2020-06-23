@@ -1,9 +1,9 @@
-export default class StreamBuffer {
+export default class StreamTimeoutRepository {
 
-	private static _instance: StreamBuffer;
+	private static _instance: StreamTimeoutRepository;
 	public static getInstance() {
 		if (this._instance == null) {
-			this._instance = new StreamBuffer();
+			this._instance = new StreamTimeoutRepository();
 		}
 		return this._instance;
 	}
