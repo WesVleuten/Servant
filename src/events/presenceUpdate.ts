@@ -1,6 +1,6 @@
 import { Client as DiscordClient, Presence } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
-import WhiteListedGamesRepository from "../repository/whiteListedGames";
+import WhiteListRepository from "../repository/whiteList";
 import StreamBuffer from "../repository/streamBuffer";
 import Logger from "../lib/log";
 import TwitchClient from "../lib/twitch";
@@ -26,7 +26,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		return;
 	}
 
-	const whiteListed = await CheckGameWhitelisted(streamingActivity);
+	const whiteListed = await CheckIfWhitelisted(streamingActivity);
 	
 	if ((serverSettings.streamLiveRole !== null || serverSettings.streamShout !== null) && whiteListed && serverSettings.streamTimeout > 0) {
 		const sb = StreamBuffer.getInstance()
@@ -102,7 +102,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 			
 	}
 
-	async function CheckGameWhitelisted(streamingActivity: any): Promise<boolean> {
+	async function CheckIfWhitelisted(streamingActivity: any): Promise<boolean> {
 		if (streamingActivity === undefined || !streamingActivity.url) { 
 			return false;
 		}
@@ -116,12 +116,16 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 			return false;
 		}
 
-		const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
-		if (!wlg) {
+		const wl = await WhiteListRepository.GetByGuildId(guildId);
+		if (!wl) {
 			return true;
 		}
 
-		if (wlg.length > 0 && wlg.find(g => g.id === stream.game_id) === undefined) {
+		if (wl.games.length > 0 && wl.games.find(g => g.id === stream.game_id) === undefined) {
+			return false;
+		}	
+
+		if (wl.roles.length > 0 && wl.roles.find(g => g.id === stream.game_id) === undefined) {
 			return false;
 		}	
 

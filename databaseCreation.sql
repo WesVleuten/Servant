@@ -36,3 +36,11 @@ CREATE TABLE `WhiteListedGames` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`guildId`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `WhiteListedRoles`;
+CREATE TABLE `WhiteListedRoles` (
+  `guildId` VARCHAR(255) NOT NULL,
+  `id` VARCHAR(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`guildId`, `name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
