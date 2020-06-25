@@ -213,12 +213,12 @@ export default class ConfigCommand implements ICommand {
 				}
 				WhiteListRepository.AddGame(guildId, game.id, game.name);
 			} else if (key == 'whiteListedRoles') {
-        const role = guild.roles.cache.find(r => r.id === value)
-        if (role === undefined) { 
-          message.reply('Role id does not exist in this guild');
-          return;
-        }
-        WhiteListRepository.AddRole(guildId, role.id, role.name);
+				const role = guild.roles.cache.find(r => r.id === value)
+				if (role === undefined) { 
+					message.reply('Role id does not exist in this guild');
+					return;
+				}
+				WhiteListRepository.AddRole(guildId, role.id, role.name);
 			}
 		}
 
