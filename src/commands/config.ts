@@ -1,7 +1,7 @@
 import { ICommand, PermissionLevel } from "./base";
 import { Message, Client } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
-import WhiteListedGamesRepository from "../repository/whiteListedGames";
+import WhiteListRepository from "../repository/whiteList";
 import TwitchClient from "../lib/twitch";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
@@ -18,8 +18,8 @@ export default class ConfigCommand implements ICommand {
 	async run(discordClient: Client, message: Message, args: string[]) {
 		const guildId = message.guild?.id;
 		const ss = await ServerSettingsRepository.GetByGuildId(guildId);
-		const wlg = await WhiteListedGamesRepository.GetByGuildId(guildId);
-		if (!ss || !wlg || !message.guild) {
+		const wl = await WhiteListRepository.GetByGuildId(guildId);
+		if (!ss || !wl || !message.guild) {
 			return;
 		}
 
@@ -63,8 +63,13 @@ export default class ConfigCommand implements ICommand {
 			}
 
 			let whiteListedGamesString = 'Off';
-			if (wlg.length > 0) {
-				whiteListedGamesString = wlg.map(g => g.name).join("\n");
+			if (wl.games.length > 0) {
+				whiteListedGamesString = wl.games.map(g => g.name).join("\n");
+			}
+
+			let whiteListedRolesString = 'Off';
+			if (wl.roles.length > 0) {
+				whiteListedRolesString = wl.roles.map(r => r.name + " (" + r.id + ")").join("\n");
 			}
 
 			const embed = createMessageEmbed({
@@ -103,6 +108,10 @@ export default class ConfigCommand implements ICommand {
 					{
 						key: "whiteListedGames",
 						value: whiteListedGamesString,
+					},
+					{
+						key: "whiteListedRoles",
+						value: whiteListedRolesString,
 					},
 				],
 			});
@@ -187,42 +196,53 @@ export default class ConfigCommand implements ICommand {
 			}
 		}
 
-		if (args.length > 3 && args[0] == 'add') {
+		if (args.length >= 3 && args[0] == 'add') {
 			const key = args[1];
 			const value = args.slice(2).join(" ");
+			if (value == 'null') { 
+				message.reply('No value specified');
+				return;
+			}
 
 			if (key == 'whiteListedGames') {
-				if (value == 'null') {
-					message.reply('No game specified');
+				const twitch = TwitchClient.getInstance()
+				const game = await twitch.getGameData(value);
+				if (!game) {
+					message.reply('Game does not exist for Twitch');
 					return;
-				} else {
-					const twitch = TwitchClient.getInstance()
-					const game = await twitch.getGameData(value);
-					if (!game) { 
-						message.reply('Game does not exist for Twitch');
-						return;
-					}
-					
-					WhiteListedGamesRepository.Add(guildId, game.id, game.name);
 				}
+				WhiteListRepository.AddGame(guildId, game.id, game.name);
+			} else if (key == 'whiteListedRoles') {
+        const role = guild.roles.cache.find(r => r.id === value)
+        if (role === undefined) { 
+          message.reply('Role id does not exist in this guild');
+          return;
+        }
+        WhiteListRepository.AddRole(guildId, role.id, role.name);
 			}
 		}
 
-		if (args.length > 3 && args[0] == 'remove') {
+		if (args.length >= 3 && args[0] == 'remove') {
 			const key = args[1];
 			const value = args.slice(2).join(" ");
+			if (value == 'null') { 
+				message.reply('No value specified');
+				return;
+			}
 
 			if (key == 'whiteListedGames') {
-				if (value == 'null') {
-					message.reply('No game specified');
+				if (wl.games.find(g => g.name == value)) {
+					WhiteListRepository.RemoveGame(guildId, value);
+				} else { 
+					message.reply('Game is not in whitelist');
 					return;
-				} else {
-					if (wlg.find(g => g.name == value)) {
-						WhiteListedGamesRepository.Remove(guildId, value);
-					} else { 
-						message.reply('Game is not in whitelist');
-						return;
-					}
+				}
+			} else if (key == 'whiteListedRoles') {
+				if (wl.roles.find(r => r.id == value)) {
+					WhiteListRepository.RemoveRole(guildId, value);
+				} else { 
+					message.reply('Role is not in whitelist');
+					return;
 				}
 			}
 		}

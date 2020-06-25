@@ -11,11 +11,13 @@ export default class WhiteListRepository {
 		}
 		const database = Database.getInstance()
 
-		const games = database.query<WhiteListedGame[]>("SELECT * FROM WhiteListedGames WHERE guildId = ?", [guildId]);
-    const roles = database.query<WhiteListedRole[]>("SELECT * FROM WhiteListedRoles WHERE guildId = ?", [guildId]);
+		const games = await database.query<WhiteListedGame[]>("SELECT * FROM WhiteListedGames WHERE guildId = ?", [guildId]);
+    const roles = await database.query<WhiteListedRole[]>("SELECT * FROM WhiteListedRoles WHERE guildId = ?", [guildId]);
     
-    const wl = {} as WhiteList
-    return Object.assign(wl, await Promise.all([games, roles]));
+    return { 
+      games: games,
+      roles: roles,
+    };
 	}
 
 	static async AddGame(guildId: string | undefined, id: string, name: string) {

@@ -42,5 +42,5 @@ CREATE TABLE `WhiteListedRoles` (
   `guildId` VARCHAR(255) NOT NULL,
   `id` VARCHAR(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`guildId`, `name`)
+  PRIMARY KEY (`guildId`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
