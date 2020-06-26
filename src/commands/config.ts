@@ -68,7 +68,7 @@ export default class ConfigCommand implements ICommand {
 			}
 
 			let whiteListedRolesString = 'Off';
-      if (wl.roles.length > 0) {
+			if (wl.roles.length > 0) {
 				whiteListedRolesString = wl.roles.map(r => guild.roles.resolve(r.id)?.name + " (" + r.id + ")").join("\n");
 			}
 
