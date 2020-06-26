@@ -68,8 +68,8 @@ export default class ConfigCommand implements ICommand {
 			}
 
 			let whiteListedRolesString = 'Off';
-			if (wl.roles.length > 0) {
-				whiteListedRolesString = wl.roles.map(r => r.name + " (" + r.id + ")").join("\n");
+      if (wl.roles.length > 0) {
+				whiteListedRolesString = wl.roles.map(r => guild.roles.resolve(r.id)?.name + " (" + r.id + ")").join("\n");
 			}
 
 			const embed = createMessageEmbed({
@@ -213,12 +213,12 @@ export default class ConfigCommand implements ICommand {
 				}
 				WhiteListRepository.AddGame(guildId, game.id, game.name);
 			} else if (key == 'whiteListedRoles') {
-				const role = guild.roles.cache.find(r => r.id === value)
+				const role = guild.roles.cache.find(r => r.id === value || r.name === value)
 				if (role === undefined) { 
 					message.reply('Role id does not exist in this guild');
 					return;
 				}
-				WhiteListRepository.AddRole(guildId, role.id, role.name);
+				WhiteListRepository.AddRole(guildId, role.id);
 			}
 		}
 

@@ -42,7 +42,7 @@ export default class WhiteListRepository {
 		await database.query("DELETE FROM WhiteListedGames WHERE guildId = ? AND name = ?", [guildId, name]);
 	}
 
-	static async AddRole(guildId: string | undefined, id: string, name: string) {
+	static async AddRole(guildId: string | undefined, id: string) {
 		if (!guildId) {
 			return;
 		}
@@ -51,7 +51,6 @@ export default class WhiteListRepository {
 		await database.query("INSERT INTO WhiteListedRoles SET ?", [{
 			guildId: guildId,
 			id: id,
-			name: name,
 		}]);
 	}
 

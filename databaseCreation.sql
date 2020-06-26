@@ -24,6 +24,7 @@ CREATE TABLE `ServerSettings` (
   `systemNotice` tinyint(1) NOT NULL,
   `streamLiveRole` varchar(255) DEFAULT NULL,
   `streamShout` varchar(255) DEFAULT NULL,
+  `streamTimeout` int(11) DEFAULT NULL,
   `adminRole` varchar(255) DEFAULT NULL,
   `moderatorRole` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -41,6 +42,5 @@ DROP TABLE IF EXISTS `WhiteListedRoles`;
 CREATE TABLE `WhiteListedRoles` (
   `guildId` VARCHAR(255) NOT NULL,
   `id` VARCHAR(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
   PRIMARY KEY (`guildId`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
