@@ -1,7 +1,7 @@
 import { Message, Client } from "discord.js";
 
 export enum PermissionLevel {
-	BotOwner		=  0,
+	BotOwner		=	0,
 	Administrator	= 10,
 	Moderator		= 20,
 	User			= 30,

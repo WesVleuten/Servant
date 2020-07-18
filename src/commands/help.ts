@@ -3,8 +3,8 @@ import { Message, Client } from "discord.js";
 import { getCommands } from "../routes";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
-import config from "../lib/config";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
+import GetPermissionLevel from "../lib/authorization";
 
 export default class HelpCommand implements ICommand {
 
@@ -28,17 +28,7 @@ export default class HelpCommand implements ICommand {
 			return;
 		}
 
-		let permissionLevel = PermissionLevel.User;
-		if (message.author.id === config.botOwnerUserId) {
-			permissionLevel = PermissionLevel.BotOwner;
-		} else if (message.author.id === message.guild?.ownerID) {
-			permissionLevel = PermissionLevel.Administrator;
-		} else if (serverSettings.adminRole && message.member?.roles.cache.has(serverSettings.adminRole)) {
-			permissionLevel = PermissionLevel.Administrator;
-		} else if (serverSettings.moderatorRole && message.member?.roles.cache.has(serverSettings.moderatorRole)) {
-			permissionLevel = PermissionLevel.Moderator;
-		}
-
+		const permissionLevel = await GetPermissionLevel(message.member!);
 		const commands = await getCommands(permissionLevel);
 		
 		const embed = createMessageEmbed({
@@ -56,7 +46,6 @@ export default class HelpCommand implements ICommand {
 
 		message.reply({ embed });
 		return;
-
 	}
 
 }
