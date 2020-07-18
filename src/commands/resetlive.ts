@@ -2,6 +2,7 @@ import { ICommand, PermissionLevel } from "./base";
 import { Message, Client } from "discord.js";
 import ServerSettingsRepository from "../repository/severSettings";
 import Logger from "../lib/log";
+import CheckIfWhitelisted from "../lib/checkWhitelist";
 
 export default class LiveResetCommand implements ICommand {
 
@@ -38,11 +39,12 @@ export default class LiveResetCommand implements ICommand {
 		const members = await guild.members.fetch({ limit: 1000, time: 1000 });
 		for (const [memberId, member] of members) {
 			const streamingActivity = member.presence.activities.find(activity => activity.type == "STREAMING");
+			const whiteListed = await CheckIfWhitelisted(guildId, streamingActivity, member);
 			
-			if (member.roles.cache.has(ss.streamLiveRole) && streamingActivity === undefined) {
+			if (member.roles.cache.has(ss.streamLiveRole) && !whiteListed) {
 				await member.roles.remove(liverole);
 				removals++;
-			} else if (streamingActivity !== undefined) {
+			} else if (whiteListed) {
 				await member.roles.add(liverole);
 				additions++;
 			}
