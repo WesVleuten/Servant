@@ -8,7 +8,8 @@ import VoiceStateUpdateEvent from "./events/voiceStateUpdate";
 import MessageDeleteBulkEvent from "./events/messageDeleteBulk";
 import ErrorEvent from "./events/error";
 import MessageEvent from "./events/message";
-import { ICommand } from "./commands/base";
+import { ICommand, PermissionLevel } from "./commands/base";
+import HelpCommand from "./commands/help";
 import PurgeCommand from "./commands/purge";
 import StatsCommand from "./commands/stats";
 import ConfigCommand from "./commands/config";
@@ -16,6 +17,7 @@ import LiveResetCommand from "./commands/resetlive";
 import PresenceUpdateEvent from "./events/presenceUpdate";
 
 const Commands: ICommand[] = [
+  HelpCommand,
 	PurgeCommand,
 	StatsCommand,
 	ConfigCommand,
@@ -53,3 +55,12 @@ export async function getCommand(commandStr: string): Promise<ICommand|null> {
 	return null;
 }
 
+export async function getCommands(permissionLevel: PermissionLevel): Promise<ICommand[]> {
+  const commands: ICommand[] = [];
+	for (const command of Commands) {
+		if (permissionLevel <= command.permissionLevel) {
+			commands.push(command);
+		}
+	}
+	return commands;
+}

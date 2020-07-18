@@ -13,7 +13,7 @@ export default class ConfigCommand implements ICommand {
 	guildOnly = false;
 
 	usageText = ";config [set/add/remove] [key] [value]";
-	helpText = "Shows bot stats";
+	helpText = "Shows bot config";
 
 	async run(discordClient: Client, message: Message, args: string[]) {
 		const guildId = message.guild?.id;
