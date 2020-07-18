@@ -1,4 +1,4 @@
-import { GuildMember, User } from "discord.js";
+import { GuildMember } from "discord.js";
 import { PermissionLevel } from "../commands/base";
 import config from "../lib/config";
 import ServerSettingsRepository from "../repository/severSettings";

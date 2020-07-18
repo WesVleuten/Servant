@@ -58,7 +58,7 @@ export async function getCommand(commandStr: string): Promise<ICommand|null> {
 export async function getCommands(permissionLevel: PermissionLevel): Promise<ICommand[]> {
 	const commands: ICommand[] = [];
 	for (const command of Commands) {
-		if (permissionLevel < command.permissionLevel) {
+		if (permissionLevel <= command.permissionLevel) {
 			commands.push(command);
 		}
 	}
