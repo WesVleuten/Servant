@@ -21,8 +21,8 @@ export default async function CheckIfWhitelisted(guildId: string|undefined, stre
 		return true;
 	}
 
-	const gameWhiteListed = wl.roles.length === 0 || wl.games.find(g => g.id === stream.game_id) === undefined;
-	const roleWhiteListed = wl.roles.length === 0 || wl.roles.find(r1 => member.roles.cache.find(r2 => r1.id === r2.id) !== undefined) === undefined;
+	const gameWhiteListed = wl.games.length === 0 || wl.games.find(g => g.id === stream.game_id) !== undefined;
+	const roleWhiteListed = wl.roles.length === 0 || wl.roles.find(r1 => member.roles.cache.find(r2 => r1.id === r2.id) !== undefined) !== undefined;
 
 	return gameWhiteListed && roleWhiteListed;
 }
