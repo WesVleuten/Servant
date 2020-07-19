@@ -37,7 +37,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 		let timeout = str.get(guildMember.user.id)
 
 		if (streamingActivity !== undefined) {
-			if (timeout !== null && timeout < new Date()) {
+			if (timeout !== null && new Date() < timeout) {
 				allowPromotion = false;
 			} else {
 				timeout = new Date()
