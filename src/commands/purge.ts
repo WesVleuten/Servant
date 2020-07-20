@@ -8,7 +8,7 @@ export default class PurgeCommand implements ICommand {
 	permissionLevel = PermissionLevel.Moderator;
 	guildOnly = false;
 
-	usageText = ";purge [amount]";
+	usageText = ";purge <amount>";
 	helpText = "Deletes amount of messages";
 
 	async run(discordClient: Client, message: Message, args: string[]) {
