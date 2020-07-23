@@ -1,5 +1,5 @@
 import { Client as DiscordClient, Presence, GuildMember, Activity, Guild } from "discord.js";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 import WhiteListRepository from "../repository/whiteList";
 import StreamTimeoutRepository from "../repository/streamTimeout";
 import Logger from "../lib/log";

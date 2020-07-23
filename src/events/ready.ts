@@ -1,6 +1,6 @@
 import { Client as DiscordClient } from "discord.js";
 import Logger from "../lib/log";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 
 export default async function ReadyEvent(discordClient: DiscordClient) {
 	Logger.info(`Ready to serve, found ${discordClient.guilds.cache.size} guilds`);

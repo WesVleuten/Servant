@@ -1,5 +1,5 @@
 import { Client as DiscordClient, Message } from "discord.js";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 import Logger from "../lib/log";
 import stringArgv from 'string-argv';
 import { getCommand } from "../routes";

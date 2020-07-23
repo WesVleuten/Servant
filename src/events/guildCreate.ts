@@ -1,6 +1,6 @@
 import { Client as DiscordClient, Guild } from "discord.js";
 import Logger from "../lib/log";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 
 export default async function GuildCreateEvent(discordClient: DiscordClient, guild: Guild) {
 	ServerSettingsRepository.Create(guild.id);
