@@ -15,13 +15,17 @@ import StatsCommand from "./commands/stats";
 import ConfigCommand from "./commands/config";
 import LiveResetCommand from "./commands/resetlive";
 import PresenceUpdateEvent from "./events/presenceUpdate";
+import MuteCommand from "./commands/mute";
+import UnmuteCommand from "./commands/unmute";
 
 const Commands: ICommand[] = [
 	HelpCommand,
 	PurgeCommand,
 	StatsCommand,
 	ConfigCommand,
-	LiveResetCommand,
+  LiveResetCommand,
+  MuteCommand,
+  UnmuteCommand
 ].map(x => new x());
 
 const EventBind = {

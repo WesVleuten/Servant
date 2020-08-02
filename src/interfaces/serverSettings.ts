@@ -15,5 +15,8 @@ export default interface ServerSettings {
 	streamTimeout: number;
 
 	adminRole: string|null;
-	moderatorRole: string|null;
+  moderatorRole: string | null;
+  
+  muteRole: string|null;
+  muteChannel: string|null;
 }
