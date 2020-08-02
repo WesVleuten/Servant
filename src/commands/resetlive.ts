@@ -1,6 +1,6 @@
 import { ICommand, PermissionLevel } from "./base";
 import { Message, Client } from "discord.js";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 import Logger from "../lib/log";
 import CheckIfWhitelisted from "../lib/checkWhitelist";
 

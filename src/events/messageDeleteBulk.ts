@@ -2,7 +2,7 @@
 
 import { Client as DiscordClient, Message, Collection, Snowflake } from "discord.js";
 import ActionLogRepository from "../repository/actionLog";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 import Logger from "../lib/log";
 import { ActionType } from "../interfaces/actionTypeEnum";
 import { getTextChannel } from "../lib/util";

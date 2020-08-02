@@ -1,7 +1,7 @@
 import { GuildMember } from "discord.js";
 import { PermissionLevel } from "../commands/base";
 import config from "../lib/config";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 
 export default async function GetPermissionLevel(member: GuildMember): Promise<PermissionLevel> {
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(member.guild.id);

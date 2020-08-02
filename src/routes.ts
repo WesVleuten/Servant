@@ -23,9 +23,9 @@ const Commands: ICommand[] = [
 	PurgeCommand,
 	StatsCommand,
 	ConfigCommand,
-  LiveResetCommand,
-  MuteCommand,
-  UnmuteCommand
+	LiveResetCommand,
+	MuteCommand,
+	UnmuteCommand
 ].map(x => new x());
 
 const EventBind = {
