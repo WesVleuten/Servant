@@ -66,9 +66,9 @@ export default class ConfigCommand implements ICommand {
 			if (ss.muteRole) {
 				const muteRole = guild.roles.resolve(ss.muteRole)
 				muteRoleString = `${muteRole?.name || 'ERR-404'} (${ss.muteRole})`;
-      }
-      
-      let muteChannelString = 'Off';
+			}
+			
+			let muteChannelString = 'Off';
 			if (ss.muteChannel) {
 				const muteChannel = guild.channels.resolve(ss.muteChannel);
 				muteChannelString = `${muteChannel?.name || 'ERR-404'} (${ss.muteChannel})`;
@@ -116,15 +116,15 @@ export default class ConfigCommand implements ICommand {
 					{
 						key: "moderatorRole",
 						value: modRoleString,
-          },
-          {
-            key: "muteRole",
-            value: muteRoleString,
-          },
-          {
-            key: "muteChannel",
-            value: muteChannelString,
-          },
+					},
+					{
+						key: "muteRole",
+						value: muteRoleString,
+					},
+					{
+						key: "muteChannel",
+						value: muteChannelString,
+					},
 					{
 						key: "whiteListedGames",
 						value: whiteListedGamesString,
@@ -144,97 +144,97 @@ export default class ConfigCommand implements ICommand {
 			const key = args[1];
 			const value = args[2];
 
-      if (key == 'logChannel') {
-        if (value == 'null') {
-          ss.logChannel = null;
-        } else {
-          const logChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-          if (!logChannel) {
-            message.reply('Couldnt find channel');
-            return;
-          }
-          ss.logChannel = logChannel.id;
-        }
-      } else if (key == 'systemNotice') {
-        ss.systemNotice = Boolean(value);
-      } else if (key == 'streamLiveRole') {
-        if (value == 'null') {
-          ss.streamLiveRole = null;
-        } else {
-          const liveRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-          if (!liveRole) {
-            message.reply('Couldnt find role');
-            return;
-          }
-          ss.streamLiveRole = liveRole.id;
-        }
-      } else if (key == 'streamShout') {
-        if (value == 'null') {
-          ss.streamShout = null;
-        } else {
-          const promotionChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-          if (!promotionChannel) {
-            message.reply('Couldnt find channel');
-            return;
-          }
-          ss.streamShout = promotionChannel.id;
-        }
-      } else if (key == 'streamTimeout') {
-        if (value == 'null') {
-          ss.streamTimeout = 0;
-        } else {
-          const timeout = Number(value)
-          if (isNaN(timeout)) {
-            message.reply('Couldnt parse timeout');
-            return;
-          }
-          ss.streamTimeout = timeout;
-        }
-      } else if (key == 'adminRole') {
-        if (value == 'null') {
-          ss.adminRole = null;
-        } else {
-          const adminRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-          if (!adminRole) {
-            message.reply('Couldnt find role');
-            return;
-          }
-          ss.adminRole = adminRole.id;
-        }
-      } else if (key == 'moderatorRole') {
-        if (value == 'null') {
-          ss.moderatorRole = null;
-        } else {
-          const modRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-          if (!modRole) {
-            message.reply('Couldnt find role');
-            return;
-          }
-          ss.moderatorRole = modRole.id;
-        }
-      } else if (key == 'muteRole') {
-        if (value == 'null') {
-          ss.muteRole = null;
-        } else {
-          const muteRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-          if (!muteRole) {
-            message.reply('Couldnt find role');
-            return;
-          }
-          ss.muteRole = muteRole.id;
-        }
-      } else if (key == 'muteChannel') {
-        if (value == 'null') {
-          ss.muteChannel = null;
-        } else {
-          const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-          if (!muteChannel) {
-            message.reply('Couldnt find channel');
-            return;
-          }
-          ss.muteChannel = muteChannel.id;
-        }
-      }
+			if (key == 'logChannel') {
+				if (value == 'null') {
+					ss.logChannel = null;
+				} else {
+					const logChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+					if (!logChannel) {
+						message.reply('Couldnt find channel');
+						return;
+					}
+					ss.logChannel = logChannel.id;
+				}
+			} else if (key == 'systemNotice') {
+				ss.systemNotice = Boolean(value);
+			} else if (key == 'streamLiveRole') {
+				if (value == 'null') {
+					ss.streamLiveRole = null;
+				} else {
+					const liveRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+					if (!liveRole) {
+						message.reply('Couldnt find role');
+						return;
+					}
+					ss.streamLiveRole = liveRole.id;
+				}
+			} else if (key == 'streamShout') {
+				if (value == 'null') {
+					ss.streamShout = null;
+				} else {
+					const promotionChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+					if (!promotionChannel) {
+						message.reply('Couldnt find channel');
+						return;
+					}
+					ss.streamShout = promotionChannel.id;
+				}
+			} else if (key == 'streamTimeout') {
+				if (value == 'null') {
+					ss.streamTimeout = 0;
+				} else {
+					const timeout = Number(value)
+					if (isNaN(timeout)) {
+						message.reply('Couldnt parse timeout');
+						return;
+					}
+					ss.streamTimeout = timeout;
+				}
+			} else if (key == 'adminRole') {
+				if (value == 'null') {
+					ss.adminRole = null;
+				} else {
+					const adminRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+					if (!adminRole) {
+						message.reply('Couldnt find role');
+						return;
+					}
+					ss.adminRole = adminRole.id;
+				}
+			} else if (key == 'moderatorRole') {
+				if (value == 'null') {
+					ss.moderatorRole = null;
+				} else {
+					const modRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+					if (!modRole) {
+						message.reply('Couldnt find role');
+						return;
+					}
+					ss.moderatorRole = modRole.id;
+				}
+			} else if (key == 'muteRole') {
+				if (value == 'null') {
+					ss.muteRole = null;
+				} else {
+					const muteRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+					if (!muteRole) {
+						message.reply('Couldnt find role');
+						return;
+					}
+					ss.muteRole = muteRole.id;
+				}
+			} else if (key == 'muteChannel') {
+				if (value == 'null') {
+					ss.muteChannel = null;
+				} else {
+					const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+					if (!muteChannel) {
+						message.reply('Couldnt find channel');
+						return;
+					}
+					ss.muteChannel = muteChannel.id;
+				}
+			}
 		}
 
 		if (args.length >= 3 && args[0] == 'add') {
