@@ -16,9 +16,9 @@ export default class ServerSettingsRepository {
 			streamShout: null,
 			streamTimeout: 6,
 			adminRole: null, 
-      moderatorRole: null,
-      muteRole: null,
-      muteChannel: null,
+			moderatorRole: null,
+			muteRole: null,
+			muteChannel: null,
 		});
 	}
 
