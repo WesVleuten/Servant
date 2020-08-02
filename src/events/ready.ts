@@ -15,21 +15,21 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 		if (serverSettings === null) {
 			ServerSettingsRepository.Create(guild.id);
 			Logger.info(`Created guild ${guild.id}`);
-    }
-    
-    serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id)
-    if (serverSettings!.muteRole !== null) {
-      const muteRole = guild.roles.resolve(serverSettings!.muteRole)
-      if (muteRole === null) {
-        return;
-      }
-      SetMutedPermissions(muteRole)
+		}
+		
+		serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id)
+		if (serverSettings!.muteRole !== null) {
+			const muteRole = guild.roles.resolve(serverSettings!.muteRole)
+			if (muteRole === null) {
+				return;
+			}
+			SetMutedPermissions(muteRole)
 
-      const muted = await MutedRepository.GetAll(guild.id)
-      if (muted === null) { 
-        return;
-      }
-      muted.forEach(m => UnmuteWhenExpired(guild, muteRole, m))
-    }
+			const muted = await MutedRepository.GetAll(guild.id)
+			if (muted === null) { 
+				return;
+			}
+			muted.forEach(m => UnmuteWhenExpired(guild, muteRole, m))
+		}
 	}
 }
