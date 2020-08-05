@@ -21,6 +21,16 @@ export default class MutedRepository {
 		await database.query("INSERT INTO Muted SET ?", [mute]);
 		return mute
 	}
+	
+	static async IsMuted(guildId: string|undefined, userId: string) { 
+		if (!guildId) {
+			return null;
+		}
+		const database = Database.getInstance();
+		
+		const mute = await database.query<Mute[]>("SELECT * FROM Muted WHERE guildId = ? AND userId = ?", [guildId, userId]);
+		return mute.length !== 0;
+	}
 
 	static async GetAll(guildId: string|undefined): Promise<Mute[]|null> {
 		if (!guildId) {

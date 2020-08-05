@@ -4,6 +4,7 @@ import Logger from "../lib/log";
 import stringArgv from 'string-argv';
 import { getCommand } from "../routes";
 import GetPermissionLevel from "../lib/authorization";
+import MutedRepository from "../repository/muted";
 
 export default async function MessageEvent(discordClient: DiscordClient, message: Message) {
 	if (message.author.bot || message.content.length < 1 || message.content[0] !== ';') {
@@ -27,8 +28,7 @@ export default async function MessageEvent(discordClient: DiscordClient, message
 	}
 	
 	const permissionLevel = await GetPermissionLevel(message.member!);
-	if (permissionLevel > cmd.permissionLevel) {
-		// no permission
+	if (permissionLevel > cmd.permissionLevel || await MutedRepository.IsMuted(guildId, message.author.id)) {
 		return;
 	}
 	

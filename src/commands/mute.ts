@@ -5,7 +5,6 @@ import ServerSettingsRepository from "../repository/severSettings";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
 import MutedRepository from "../repository/muted";
 import { UnmuteWhenExpired } from '../lib/mutedRole';
-import { isNullOrUndefined } from "util";
 
 export default class MuteCommand implements ICommand {
 
@@ -20,7 +19,7 @@ export default class MuteCommand implements ICommand {
 	async run(discordClient: Client, message: Message, args: string[]) {
 		const guildId = message.guild?.id;
 		const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
-		if (serverSettings == null || serverSettings.muteRole == null) {
+		if (serverSettings === null || serverSettings.muteRole === null) {
 			return;
 		}
 
@@ -29,8 +28,12 @@ export default class MuteCommand implements ICommand {
 		}
 
 		const guildMember = message.mentions.members.first()
-		if (!guildMember || !args[0].includes(guildMember.id)) { 
+		if (!guildMember || !args[0].includes(guildMember.id) || guildMember.id === message.author.id) { 
 			return;
+		}
+		
+		if (await MutedRepository.IsMuted(guildId, message.member!.id)) { 
+			await MutedRepository.Remove(guildId, guildMember.id)
 		}
 
 		const date = this.parseDate(args[1]);

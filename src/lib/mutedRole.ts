@@ -16,7 +16,9 @@ export async function SetMutedPermissions(mutedRole: Role) {
 		muteChannel = null;
 	}
 	
-	await Promise.all(mutedRole.guild.channels.cache.map(channel => SetMutedPermissionsForChannel(mutedRole, channel, muteChannel)))
+	await Promise.all(mutedRole.guild.channels.cache
+		.filter(channel => channel.type === "voice" || channel.type === "text")
+		.map(channel => SetMutedPermissionsForChannel(mutedRole, channel, muteChannel)))
 }
 
 export async function SetMutedPermissionsForChannel(mutedRole: Role, channel: GuildChannel, muteChannel: GuildChannel | null) {
