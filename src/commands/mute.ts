@@ -41,7 +41,6 @@ export default class MuteCommand implements ICommand {
 
 		const embed = createMessageEmbed({
 			author: "Bot Mod",
-			footer: `Servant developed by Westar and Notfood, originally by Danskbog`,
 			fields: [
 				{
 					key: "User",
