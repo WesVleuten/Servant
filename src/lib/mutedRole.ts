@@ -8,21 +8,18 @@ export async function SetMutedPermissions(mutedRole: Role) {
 	if (serverSettings === null) {
 		return;
 	}
-
-	let muteChannel: GuildChannel | null;
-	if (serverSettings.muteChannel !== null) {
-		muteChannel = mutedRole.guild.channels.resolve(serverSettings.muteChannel);
-	} else { 
-		muteChannel = null;
-	}
 	
 	await Promise.all(mutedRole.guild.channels.cache
 		.filter(channel => channel.type === "voice" || channel.type === "text")
-		.map(channel => SetMutedPermissionsForChannel(mutedRole, channel, muteChannel)))
+		.map(channel => SetMutedPermissionsForChannel(mutedRole, channel, serverSettings.muteChannel)))
 }
 
-export async function SetMutedPermissionsForChannel(mutedRole: Role, channel: GuildChannel, muteChannel: GuildChannel | null) {
-	if (muteChannel !== null && channel.equals(muteChannel)) { 
+export async function SetMutedPermissionsForChannel(mutedRole: Role, channel: GuildChannel, muteChannelId: string|null) {
+	if (!muteChannelId !== null && channel.id === muteChannelId) {
+		await channel.createOverwrite(mutedRole, {
+			SEND_MESSAGES: true,
+			ADD_REACTIONS: false
+		}, "Automatic mute role permissions");
 		return;
 	}
 

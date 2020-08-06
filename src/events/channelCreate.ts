@@ -9,16 +9,9 @@ export default async function ChannelCreateEvent(discordClient: DiscordClient, c
 	}
 
 	if (serverSettings!.muteRole !== null) {
-		let muteChannel: GuildChannel | null;
-		if (serverSettings.muteChannel !== null) {
-			muteChannel = channel.guild.channels.resolve(serverSettings.muteChannel);
-		} else { 
-			muteChannel = null;
-		}
-
 		const muteRole = channel.guild.roles.resolve(serverSettings!.muteRole)
 		if (muteRole !== null) {
-			SetMutedPermissionsForChannel(muteRole, channel, muteChannel)
+			SetMutedPermissionsForChannel(muteRole, channel, null)
 		}
 	}
 }
