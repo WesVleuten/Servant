@@ -23,13 +23,13 @@ export default class PurgeCommand implements ICommand {
 		};
 
 		if (message.mentions.members!.size > 0) { 
-			// Up the amount massively so it can be filtered on specific user
+			// Up the amount massively so it can be filtered on a specific user
 			amount *= 4;
 		}
 		
 		let fetched = await message.channel.messages.fetch({ limit: amount + 1 });
-    if (message.mentions.members!.size > 0) {
-      // Bring amount back down again
+		if (message.mentions.members!.size > 0) {
+			// Bring amount back down again
 			amount /= 4;
 
 			const guildMember = message.mentions.members!.first()
