@@ -2,7 +2,6 @@ import { Client as DiscordClient, MessageReaction, User, PartialUser } from "dis
 import ServerSettingsRepository from "../repository/serverSettings";
 import { getTextChannel } from "../lib/util";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
-import Logger from "../lib/log";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
 	const guildId = messageReaction.message.guild?.id;
@@ -31,12 +30,6 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
 			{
 				key: "User",
 				value:`${messageReaction.message.author}`,
-				inline: true,
-			},
-			{
-				key: "Channel",
-				value: `${messageReaction.message.channel}`,
-				inline: true,
 			},
 			{
 				key: "Quote",

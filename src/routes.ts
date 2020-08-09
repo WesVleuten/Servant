@@ -16,13 +16,15 @@ import PurgeCommand from "./commands/purge";
 import StatsCommand from "./commands/stats";
 import ConfigCommand from "./commands/config";
 import LiveResetCommand from "./commands/resetlive";
+import QuoteCommand from "./commands/quote";
 
 const Commands: ICommand[] = [
 	HelpCommand,
 	PurgeCommand,
 	StatsCommand,
 	ConfigCommand,
-	LiveResetCommand,
+  LiveResetCommand,
+  QuoteCommand,
 ].map(x => new x());
 
 const EventBind = {

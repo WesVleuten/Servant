@@ -47,3 +47,11 @@ CREATE TABLE `WhiteListedRoles` (
   `id` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`guildId`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `Quotes`;
+CREATE TABLE `Quotes` (
+  `guildId` VARCHAR(255) NOT NULL,
+  `messageId` VARCHAR(255) NOT NULL,
+  `state` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`guildId`, `messageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
