@@ -59,9 +59,9 @@ export default class MuteCommand implements ICommand {
 		const muteRole = await message.guild?.roles.fetch(serverSettings.muteRole);
 		if (!muteRole) {
 			return;
-    }
-    
-    if (await MutedRepository.IsMuted(guildId, guildMember.id)) {
+		}
+		
+		if (await MutedRepository.IsMuted(guildId, guildMember.id)) {
 			await MutedRepository.Remove(guildId, guildMember.id)
 		}
 
