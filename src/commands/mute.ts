@@ -31,10 +31,6 @@ export default class MuteCommand implements ICommand {
 		if (!guildMember || !args[0].includes(guildMember.id) || guildMember.id === message.author.id) { 
 			return;
 		}
-		
-		if (await MutedRepository.IsMuted(guildId, message.member!.id)) { 
-			await MutedRepository.Remove(guildId, guildMember.id)
-		}
 
 		const date = this.parseDate(args[1]);
 		const reason = args.slice(2).join(" ");
@@ -63,6 +59,10 @@ export default class MuteCommand implements ICommand {
 		const muteRole = await message.guild?.roles.fetch(serverSettings.muteRole);
 		if (!muteRole) {
 			return;
+    }
+    
+    if (await MutedRepository.IsMuted(guildId, guildMember.id)) {
+			await MutedRepository.Remove(guildId, guildMember.id)
 		}
 
 		const mute = await MutedRepository.Add(guildId, guildMember.id, message.author.id, new Date(), date, reason)
