@@ -34,7 +34,12 @@ export default class UnmuteCommand implements ICommand {
 			return;
 		}
 
-		MutedRepository.Remove(guildId, guildMember.id)
+		const mute = await MutedRepository.GetRunning(guildId, guildMember.id)
+		if (mute === null) { 
+			return;
+		}
+
+		MutedRepository.SetUnmuted(mute.id, new Date())
 		const user = message.guild!.members.resolve(guildMember.id);
 		if (user === null) { 
 			return;

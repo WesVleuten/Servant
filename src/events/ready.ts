@@ -25,7 +25,7 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 			}
 			SetMutedPermissions(muteRole)
 
-			const muted = await MutedRepository.GetAll(guild.id)
+			const muted = await MutedRepository.GetAllRunning(guild.id)
 			if (muted === null) { 
 				return;
 			}

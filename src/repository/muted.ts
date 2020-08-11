@@ -13,41 +13,37 @@ export default class MutedRepository {
 			guildId: guildId,
 			userId: userId,
 			byUserId: byUserId,
-			date: date,
+			start: date,
 			until: until,
 			reason: reason,
 		};
 
 		await database.query("INSERT INTO Muted SET ?", [mute]);
-		return mute
+		return await this.GetRunning(guildId, userId);
 	}
 	
-	static async IsMuted(guildId: string|undefined, userId: string) { 
+	static async GetRunning(guildId: string|undefined, userId: string) { 
 		if (!guildId) {
 			return null;
 		}
 		const database = Database.getInstance();
 		
-		const mute = await database.query<Mute[]>("SELECT * FROM Muted WHERE guildId = ? AND userId = ?", [guildId, userId]);
-		return mute.length !== 0;
+		const mute = await database.query<Mute[]>("SELECT * FROM Muted WHERE guildId = ? AND userId = ? AND end IS NULL", [guildId, userId]);
+		return mute.length !== 0 ? mute[0] : null;
 	}
 
-	static async GetAll(guildId: string|undefined): Promise<Mute[]|null> {
+	static async GetAllRunning(guildId: string|undefined): Promise<Mute[]|null> {
 		if (!guildId) {
 			return null;
 		}
 		const database = Database.getInstance();
 		
-		return await database.query<Mute[]>("SELECT * FROM Muted WHERE guildId = ?", [guildId]);
+		return await database.query<Mute[]>("SELECT * FROM Muted WHERE guildId = ? AND end IS NULL", [guildId]);
 	}
 	
-	static async Remove(guildId: string|undefined, userId: string|undefined) {
-		if (!guildId) {
-			return;
-		}
+	static async SetUnmuted(id: number, end: Date) {
 		const database = Database.getInstance();
-
-		await database.query("DELETE FROM Muted WHERE guildId = ? AND userId = ?", [guildId, userId]);
+		await database.query("UPDATE Muted SET end = ? WHERE id = ? ", [end, id]);
 	}
 
 }

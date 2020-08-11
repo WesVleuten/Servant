@@ -37,7 +37,7 @@ export async function UnmuteWhenExpired(guild: Guild, mutedRole: Role, mute: Mut
 		});
 	}
 
-	MutedRepository.Remove(mute.guildId, mute.userId)
+	MutedRepository.SetUnmuted(mute.id, new Date())
 	const user = guild.members.resolve(mute.userId);
 	if (user === null) { 
 		return;

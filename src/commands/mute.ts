@@ -61,8 +61,9 @@ export default class MuteCommand implements ICommand {
 			return;
 		}
 		
-		if (await MutedRepository.IsMuted(guildId, guildMember.id)) {
-			await MutedRepository.Remove(guildId, guildMember.id)
+		const oldMute = await MutedRepository.GetRunning(guildId, guildMember.id)
+		if (oldMute !== null) {
+			await MutedRepository.SetUnmuted(oldMute.id, new Date())
 		}
 
 		const mute = await MutedRepository.Add(guildId, guildMember.id, message.author.id, new Date(), date, reason)

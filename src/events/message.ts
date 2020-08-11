@@ -28,7 +28,8 @@ export default async function MessageEvent(discordClient: DiscordClient, message
 	}
 	
 	const permissionLevel = await GetPermissionLevel(message.member!);
-	if (permissionLevel > cmd.permissionLevel || await MutedRepository.IsMuted(guildId, message.author.id)) {
+	const mute = await MutedRepository.GetRunning(guildId, message.author.id);
+	if (permissionLevel > cmd.permissionLevel || mute !== null) {
 		return;
 	}
 	
