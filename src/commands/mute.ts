@@ -1,10 +1,11 @@
 
 import { ICommand, PermissionLevel } from "./base";
 import { Message, Client } from "discord.js";
-import ServerSettingsRepository from "../repository/severSettings";
+import ServerSettingsRepository from "../repository/serverSettings";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
 import MutedRepository from "../repository/muted";
 import { UnmuteWhenExpired } from '../lib/mutedRole';
+import { isReturnStatement } from "typescript";
 
 export default class MuteCommand implements ICommand {
 
@@ -20,21 +21,28 @@ export default class MuteCommand implements ICommand {
 		const guildId = message.guild?.id;
 		const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
 		if (serverSettings === null || serverSettings.muteRole === null) {
+			message.reply("Muting has not been configured");
 			return;
 		}
 
-		if (args.length < 3 || message.mentions.members === null || message.mentions.members.size === 0) { 
+		if (args.length < 3 || message.mentions.members === null || message.mentions.members.size === 0) {
+			message.reply(this.usageText);
 			return;
 		}
 
 		const guildMember = message.mentions.members.first()
-		if (!guildMember || !args[0].includes(guildMember.id) || guildMember.id === message.author.id) { 
+		if (!guildMember || !args[0].includes(guildMember.id)) {
+			message.reply(this.usageText)
+			return;
+		}
+		
+		if (guildMember.id === message.author.id) { 
+			message.reply("User can't mute themselves");
 			return;
 		}
 
 		const date = this.parseDate(args[1]);
 		const reason = args.slice(2).join(" ");
-
 		const embed = createMessageEmbed({
 			author: "Bot Mod",
 			fields: [
@@ -58,6 +66,7 @@ export default class MuteCommand implements ICommand {
 		
 		const muteRole = await message.guild?.roles.fetch(serverSettings.muteRole);
 		if (!muteRole) {
+			message.reply("Mute role could not be found");
 			return;
 		}
 		

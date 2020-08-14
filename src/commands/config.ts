@@ -4,8 +4,7 @@ import ServerSettingsRepository from "../repository/serverSettings";
 import WhiteListRepository from "../repository/whiteList";
 import TwitchClient from "../lib/twitch";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
-import MutedRepository from "../repository/muted";
-import { SetMutedPermissions } from "../lib/mutedRole";
+import { SetMutedPermissions, SetMutedPermissionsForChannel } from "../lib/mutedRole";
 
 export default class ConfigCommand implements ICommand {
 
@@ -228,6 +227,21 @@ export default class ConfigCommand implements ICommand {
 			} else if (key == 'muteChannel') {
 				if (value == 'null') {
 					ss.muteChannel = null;
+					const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+					if (!muteChannel) {
+						return;
+					}
+					
+					if (!ss.muteRole) {
+						return;
+					}
+
+					const muteRole = await message.guild?.roles.fetch(ss.muteRole);
+					if (!muteRole) {
+						return;
+					}
+					
+					SetMutedPermissionsForChannel(muteRole, muteChannel, null)
 				} else {
 					const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
 					if (!muteChannel) {
@@ -245,7 +259,7 @@ export default class ConfigCommand implements ICommand {
 						return;
 					}
 
-					SetMutedPermissions(muteRole);
+					SetMutedPermissionsForChannel(muteRole, muteChannel, muteChannel.id)
 				}
 			}
 		}

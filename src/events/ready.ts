@@ -18,7 +18,7 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 		}
 		
 		serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id)
-		if (serverSettings!.muteRole !== null) {
+		if (serverSettings?.muteRole !== null) {
 			const muteRole = guild.roles.resolve(serverSettings!.muteRole)
 			if (muteRole === null) {
 				return;
