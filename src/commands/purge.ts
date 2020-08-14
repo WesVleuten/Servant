@@ -26,7 +26,8 @@ export default class PurgeCommand implements ICommand {
 			// Up the amount massively so it can be filtered on a specific user
 			amount *= 4;
 		}
-		
+    
+    await message.delete();
 		let fetched = await message.channel.messages.fetch({ limit: amount });
 		if (message.mentions.members!.size > 0) {
 			// Bring amount back down again
