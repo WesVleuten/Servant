@@ -4,8 +4,7 @@ import { Message, Client } from "discord.js";
 import ServerSettingsRepository from "../repository/serverSettings";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
 import MutedRepository from "../repository/muted";
-import { UnmuteWhenExpired } from '../lib/mutedRole';
-import { isReturnStatement } from "typescript";
+import { UnmuteWhenExpires } from "../lib/mutedRole";
 
 export default class MuteCommand implements ICommand {
 
@@ -82,8 +81,8 @@ export default class MuteCommand implements ICommand {
 		
 		await guildMember!.roles.add(muteRole, "Automatically muted")
 		message.reply({ embed });
-
-		UnmuteWhenExpired(message.guild!, muteRole, mute)
+		
+		UnmuteWhenExpires(message.guild!, muteRole, mute);
 		return;
 	}
 

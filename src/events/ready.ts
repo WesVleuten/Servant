@@ -1,7 +1,6 @@
 import { Guild, Client as DiscordClient } from "discord.js";
 import Logger from "../lib/log";
-import { SetMutedPermissions, UnmuteWhenExpired } from "../lib/mutedRole";
-import MutedRepository from "../repository/muted";
+import { SetMutedPermissions, CheckExpires } from "../lib/mutedRole";
 import ServerSettingsRepository from "../repository/serverSettings";
 
 export default async function ReadyEvent(discordClient: DiscordClient) {
@@ -23,13 +22,9 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 			if (muteRole === null) {
 				return;
 			}
+			
 			SetMutedPermissions(muteRole)
-
-			const muted = await MutedRepository.GetAllRunning(guild.id)
-			if (muted === null) { 
-				return;
-			}
-			muted.forEach(m => UnmuteWhenExpired(guild, muteRole, m))
+			CheckExpires(guild, muteRole)
 		}
 	}
 }
