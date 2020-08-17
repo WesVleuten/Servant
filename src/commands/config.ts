@@ -226,22 +226,22 @@ export default class ConfigCommand implements ICommand {
 				}
 			} else if (key == 'muteChannel') {
 				if (value == 'null') {
+					const oldMutedChannelId = ss.muteChannel;
 					ss.muteChannel = null;
-					const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-					if (!muteChannel) {
-						return;
-					}
 					
-					if (!ss.muteRole) {
-						return;
-					}
+					if (ss.muteRole && oldMutedChannelId) {
+						const muteChannel = guild.channels.cache.find(x => x.id == oldMutedChannelId);
+						if (!muteChannel) {
+							return;
+						}
 
-					const muteRole = await message.guild?.roles.fetch(ss.muteRole);
-					if (!muteRole) {
-						return;
+						const muteRole = await message.guild?.roles.fetch(ss.muteRole);
+						if (!muteRole) {
+							return;
+						}
+						
+						SetMutedPermissionsForChannel(muteRole, muteChannel, null)
 					}
-					
-					SetMutedPermissionsForChannel(muteRole, muteChannel, null)
 				} else {
 					const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
 					if (!muteChannel) {
@@ -250,16 +250,14 @@ export default class ConfigCommand implements ICommand {
 					}
 					ss.muteChannel = muteChannel.id;
 
-					if (!ss.muteRole) {
-						return;
-					}
+					if (ss.muteRole) {
+						const muteRole = await message.guild?.roles.fetch(ss.muteRole!);
+						if (!muteRole) {
+							return;
+						}
 
-					const muteRole = await message.guild?.roles.fetch(ss.muteRole);
-					if (!muteRole) {
-						return;
+						SetMutedPermissionsForChannel(muteRole, muteChannel, muteChannel.id)
 					}
-
-					SetMutedPermissionsForChannel(muteRole, muteChannel, muteChannel.id)
 				}
 			}
 		}
