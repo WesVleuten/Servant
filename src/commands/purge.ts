@@ -38,11 +38,11 @@ export default class PurgeCommand implements ICommand {
 			maxTimestamp.setDate((new Date()).getDate() - 14)
 
 			fetched = fetched.filter(m => m.author.id === guildMember?.id && m.createdAt > maxTimestamp)
-      while (fetched.size > amount) {
-        const next = fetched.lastKey()
-        if (!next) {
-          break;
-        }
+			while (fetched.size > amount) {
+				const next = fetched.lastKey()
+				if (!next) {
+					break;
+				}
 
 				fetched.delete(next)
 			}
