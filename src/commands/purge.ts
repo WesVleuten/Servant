@@ -22,22 +22,22 @@ export default class PurgeCommand implements ICommand {
 			return;
 		};
 
-		if (message.mentions.members!.size > 0) { 
+		if (message.mentions.members && message.mentions.members?.size > 0) { 
 			// Up the amount massively so it can be filtered on a specific user
 			amount *= 4;
 		}
 		
 		await message.delete();
 		let fetched = await message.channel.messages.fetch({ limit: amount });
-		if (message.mentions.members!.size > 0) {
+		if (message.mentions.members && message.mentions.members?.size > 0) {
 			// Bring amount back down again
 			amount /= 4;
 
-			const guildMember = message.mentions.members!.first()
+			const guildMember = message.mentions.members?.first()
 			let maxTimestamp = new Date()
 			maxTimestamp.setDate((new Date()).getDate() - 14)
 
-			fetched = fetched.filter(m => m.author.id === guildMember!.id && m.createdAt > maxTimestamp)
+			fetched = fetched.filter(m => m.author.id === guildMember?.id && m.createdAt > maxTimestamp)
 			while (fetched.size > amount) { 
 				fetched.delete(fetched.lastKey()!)
 			}
