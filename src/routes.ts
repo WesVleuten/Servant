@@ -4,6 +4,7 @@ import MessageDeleteEvent from "./events/messageDelete";
 import MessageUpdateEvent from "./events/messageUpdate";
 import GuildCreateEvent from "./events/guildCreate";
 import GuildDeleteEvent from "./events/guildDelete";
+import ChannelCreateEvent from "./events/channelCreate";
 import VoiceStateUpdateEvent from "./events/voiceStateUpdate";
 import MessageDeleteBulkEvent from "./events/messageDeleteBulk";
 import ErrorEvent from "./events/error";
@@ -17,7 +18,6 @@ import LiveResetCommand from "./commands/resetlive";
 import PresenceUpdateEvent from "./events/presenceUpdate";
 import MuteCommand from "./commands/mute";
 import UnmuteCommand from "./commands/unmute";
-import ChannelCreateEvent from "./events/channelCreate";
 
 const Commands: ICommand[] = [
 	HelpCommand,
