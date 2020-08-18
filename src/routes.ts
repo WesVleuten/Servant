@@ -17,6 +17,7 @@ import LiveResetCommand from "./commands/resetlive";
 import PresenceUpdateEvent from "./events/presenceUpdate";
 import MuteCommand from "./commands/mute";
 import UnmuteCommand from "./commands/unmute";
+import ChannelCreateEvent from "./events/channelCreate";
 
 const Commands: ICommand[] = [
 	HelpCommand,
@@ -35,7 +36,8 @@ const EventBind = {
 	'messageDelete': MessageDeleteEvent,
 	'messageUpdate': MessageUpdateEvent,
 	'guildCreate': GuildCreateEvent,
-	'guildDelete': GuildDeleteEvent,
+  'guildDelete': GuildDeleteEvent,
+  'channelCreate': ChannelCreateEvent,
 	'voiceStateUpdate': VoiceStateUpdateEvent,
 	'messageDeleteBulk': MessageDeleteBulkEvent,
 	'presenceUpdate': PresenceUpdateEvent,
