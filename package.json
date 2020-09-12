@@ -22,7 +22,7 @@
 		"discord.js": "^12.2.0",
 		"fs-extra": "^9.0.0",
 		"mysql": "^2.18.1",
-		"node-fetch": "^2.6.0",
+		"node-fetch": "^2.6.1",
 		"request": "^2.88.2",
 		"string-argv": "^0.3.1",
 		"typescript": "^3.9.3",
