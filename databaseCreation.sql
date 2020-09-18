@@ -27,9 +27,14 @@ CREATE TABLE `ServerSettings` (
   `streamTimeout` int(11) DEFAULT NULL,
   `adminRole` varchar(255) DEFAULT NULL,
   `moderatorRole` varchar(255) DEFAULT NULL,
+<<<<<<< HEAD
   `quoteThreshold` int(11) DEFAULT NULL,
   `quoteEmoji` text DEFAULT NULL,
   `quoteChannel` varchar(255) DEFAULT NULL,
+=======
+  `muteRole` varchar(255) DEFAULT NULL,
+  `muteChannel` varchar(255) DEFAULT NULL,
+>>>>>>> master
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -51,7 +56,21 @@ CREATE TABLE `WhiteListedRoles` (
 DROP TABLE IF EXISTS `Quotes`;
 CREATE TABLE `Quotes` (
   `guildId` VARCHAR(255) NOT NULL,
-  `messageId` VARCHAR(255) NOT NULL,
+  `botMessageId` VARCHAR(255) NOT NULL,
+  `quotedMessageId` VARCHAR(255) NOT NULL,
   `state` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`guildId`, `messageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `Muted`;
+CREATE TABLE `Muted` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `guildId` VARCHAR(255) NOT NULL,
+  `userId` varchar(255) NOT NULL,
+  `byUserId` varchar(255) DEFAULT NULL,
+  `start` datetime NOT NULL,
+  `until` datetime NOT NULL,
+  `end` datetime DEFAULT NULL,
+  `reason` longtext NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

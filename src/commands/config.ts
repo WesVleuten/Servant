@@ -4,7 +4,7 @@ import ServerSettingsRepository from "../repository/serverSettings";
 import WhiteListRepository from "../repository/whiteList";
 import TwitchClient from "../lib/twitch";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
-import Logger from "../lib/log";
+import { SetMutedPermissions, SetMutedPermissionsForChannel } from "../lib/mutedRole";
 
 export default class ConfigCommand implements ICommand {
 
@@ -26,8 +26,8 @@ export default class ConfigCommand implements ICommand {
 
 		const guild = message.guild;
 
-		if (args.length == 0) {
-
+    if (args.length == 0) {
+      
 			let logChannelString = 'Off';
 			if (ss.logChannel) {
 				const logChannel = guild.channels.resolve(ss.logChannel);
@@ -61,6 +61,18 @@ export default class ConfigCommand implements ICommand {
 			if (ss.moderatorRole) {
 				const modRole = guild.roles.resolve(ss.moderatorRole)
 				modRoleString = `${modRole?.name || 'ERR-404'} (${ss.moderatorRole})`;
+			}
+
+			let muteRoleString = 'Off';
+			if (ss.muteRole) {
+				const muteRole = guild.roles.resolve(ss.muteRole)
+				muteRoleString = `${muteRole?.name || 'ERR-404'} (${ss.muteRole})`;
+			}
+			
+			let muteChannelString = 'Off';
+			if (ss.muteChannel) {
+				const muteChannel = guild.channels.resolve(ss.muteChannel);
+				muteChannelString = `${muteChannel?.name || 'ERR-404'} (${ss.muteChannel})`;
 			}
 
 			let whiteListedGamesString = 'Off';
@@ -123,6 +135,14 @@ export default class ConfigCommand implements ICommand {
 						value: modRoleString,
 					},
 					{
+						key: "muteRole",
+						value: muteRoleString,
+					},
+					{
+						key: "muteChannel",
+						value: muteChannelString,
+					},
+					{
 						key: "whiteListedGames",
 						value: whiteListedGamesString,
 					},
@@ -149,109 +169,154 @@ export default class ConfigCommand implements ICommand {
 			return;
 		}
 
-		if (args.length == 3 && args[0] == 'set') {
-			const key = args[1];
-			const value = args[2];
+    if (args.length == 3 && args[0] == 'set') {
+      const key = args[1];
+      const value = args[2];
 
-			if (key == 'logChannel') {
-				if (value == 'null') {
-					ss.logChannel = null;
-				} else {
-					const logChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-					if (!logChannel) {
-						message.reply('Couldnt find channel');
-						return;
-					}
-					ss.logChannel = logChannel.id;
-				}
-			} else if (key == 'systemNotice') {
-				ss.systemNotice = Boolean(value);
-			} else if (key == 'streamLiveRole') {
-				if (value == 'null') {
-					ss.streamLiveRole = null;
-				} else {
-					const liveRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-					if (!liveRole) {
-						message.reply('Couldnt find role');
-						return;
-					}
-					ss.streamLiveRole = liveRole.id;
-				}
-			} else if (key == 'streamShout') {
-				if (value == 'null') {
-					ss.streamShout = null;
-				} else {
-					const promotionChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-					if (!promotionChannel) {
-						message.reply('Couldnt find channel');
-						return;
-					}
-					ss.streamShout = promotionChannel.id;
-				}
-			} else if (key == 'streamTimeout') {
-				if (value == 'null') {
-					ss.streamTimeout = 0;
-				} else {
-					const timeout = Number(value)
-					if (isNaN(timeout)) { 
-						message.reply('Couldnt parse timeout');
-						return;
-					}
-					ss.streamTimeout = timeout;
-				}
-			} else if (key == 'adminRole') {
-				if (value == 'null') {
-					ss.adminRole = null;
-				} else {
-					const adminRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-					if (!adminRole) {
-						message.reply('Couldnt find role');
-						return;
-					}
-					ss.adminRole = adminRole.id;
-				}
-				
-			} else if (key == 'moderatorRole') {
-				if (value == 'null') {
-					ss.moderatorRole = null;
-				} else {
-					const modRole = guild.roles.cache.find(x => x.id == value || x.name == value);
-					if (!modRole) {
-						message.reply('Couldnt find role');
-						return;
-					}
-					ss.moderatorRole = modRole.id;
-				}
-			} else if (key == 'quoteThreshold') {
-				if (value == 'null') {
-					ss.quoteThreshold = 10;
-				} else {
-					const threshold = Number(value)
-					if (isNaN(threshold)) { 
-						message.reply('Couldnt parse threshold');
-						return;
-					}
-					ss.quoteThreshold = threshold;
-				}
-			} else if (key == 'quoteEmoji') {
-				if (value == 'null') {
-					ss.quoteChannel = null;
-				} else {
-					ss.quoteEmoji = Buffer.from(value).toString('base64');
-				}
-			} else if (key == 'quoteChannel') {
-				if (value == 'null') {
-					ss.quoteChannel = null;
-				} else {
-					const quoteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
-					if (!quoteChannel) {
-						message.reply('Couldnt find channel');
-						return;
-					}
-					ss.quoteChannel = quoteChannel.id;
-				}
-			}
-		}
+      if (key == 'logChannel') {
+        if (value == 'null') {
+          ss.logChannel = null;
+        } else {
+          const logChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+          if (!logChannel) {
+            message.reply('Couldnt find channel');
+            return;
+          }
+          ss.logChannel = logChannel.id;
+        }
+      } else if (key == 'systemNotice') {
+        ss.systemNotice = Boolean(value);
+      } else if (key == 'streamLiveRole') {
+        if (value == 'null') {
+          ss.streamLiveRole = null;
+        } else {
+          const liveRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+          if (!liveRole) {
+            message.reply('Couldnt find role');
+            return;
+          }
+          ss.streamLiveRole = liveRole.id;
+        }
+      } else if (key == 'streamShout') {
+        if (value == 'null') {
+          ss.streamShout = null;
+        } else {
+          const promotionChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+          if (!promotionChannel) {
+            message.reply('Couldnt find channel');
+            return;
+          }
+          ss.streamShout = promotionChannel.id;
+        }
+      } else if (key == 'streamTimeout') {
+        if (value == 'null') {
+          ss.streamTimeout = 0;
+        } else {
+          const timeout = Number(value)
+          if (isNaN(timeout)) {
+            message.reply('Couldnt parse timeout');
+            return;
+          }
+          ss.streamTimeout = timeout;
+        }
+      } else if (key == 'adminRole') {
+        if (value == 'null') {
+          ss.adminRole = null;
+        } else {
+          const adminRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+          if (!adminRole) {
+            message.reply('Couldnt find role');
+            return;
+          }
+          ss.adminRole = adminRole.id;
+        }
+      } else if (key == 'moderatorRole') {
+        if (value == 'null') {
+          ss.moderatorRole = null;
+        } else {
+          const modRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+          if (!modRole) {
+            message.reply('Couldnt find role');
+            return;
+          }
+          ss.moderatorRole = modRole.id;
+        }
+      } else if (key == 'quoteThreshold') {
+        if (value == 'null') {
+          ss.quoteThreshold = 10;
+        } else {
+          const threshold = Number(value)
+          if (isNaN(threshold)) {
+            message.reply('Couldnt parse threshold');
+            return;
+          }
+          ss.quoteThreshold = threshold;
+        }
+      } else if (key == 'quoteEmoji') {
+        if (value == 'null') {
+          ss.quoteChannel = null;
+        } else {
+          ss.quoteEmoji = Buffer.from(value).toString('base64');
+        }
+      } else if (key == 'quoteChannel') {
+        if (value == 'null') {
+          ss.quoteChannel = null;
+        } else {
+          const quoteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+          if (!quoteChannel) {
+            message.reply('Couldnt find channel');
+            return;
+          }
+          ss.quoteChannel = quoteChannel.id;
+        }
+      } else if (key == 'muteRole') {
+        if (value == 'null') {
+          ss.muteRole = null;
+        } else {
+          const muteRole = guild.roles.cache.find(x => x.id == value || x.name == value);
+          if (!muteRole) {
+            message.reply('Couldnt find role');
+            return;
+          }
+          ss.muteRole = muteRole.id;
+        }
+      } else if (key == 'muteChannel') {
+        if (value == 'null') {
+          const oldMutedChannelId = ss.muteChannel;
+          ss.muteChannel = null;
+        
+          if (ss.muteRole && oldMutedChannelId) {
+            const muteChannel = guild.channels.cache.find(x => x.id == oldMutedChannelId);
+            if (!muteChannel) {
+              return;
+            }
+
+            const muteRole = await message.guild?.roles.fetch(ss.muteRole);
+            if (!muteRole) {
+              return;
+            }
+          
+            SetMutedPermissionsForChannel(muteRole, muteChannel, null)
+          }
+        } else {
+          const muteChannel = guild.channels.cache.find(x => x.id == value || x.name == value);
+          if (!muteChannel) {
+            message.reply('Couldnt find channel');
+            return;
+          }
+          ss.muteChannel = muteChannel.id;
+
+          if (ss.muteRole) {
+            const muteRole = await message.guild?.roles.fetch(ss.muteRole!);
+            if (!muteRole) {
+              return;
+            }
+
+            SetMutedPermissionsForChannel(muteRole, muteChannel, muteChannel.id)
+          }
+        }
+      }
+    }
 
 		if (args.length >= 3 && args[0] == 'add') {
 			const key = args[1];

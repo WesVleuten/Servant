@@ -20,6 +20,8 @@ export default class ServerSettingsRepository {
 			quoteThreshold: 10,
 			quoteEmoji: null,
 			quoteChannel: null,
+			muteRole: null,
+			muteChannel: null,
 		});
 	}
 

@@ -4,6 +4,8 @@ import ServerSettingsRepository from "../repository/serverSettings";
 import Logger from "../lib/log";
 import { getTextChannel } from "../lib/util";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
+import QuotesRepository from "../repository/quotes";
+import { QuoteState } from "../interfaces/quoteStateUnum";
 
 export default class QuoteCommand implements ICommand {
 
@@ -22,7 +24,7 @@ export default class QuoteCommand implements ICommand {
 			return;
 		}
 
-		const guildId = message.guild?.id;
+		const guildId = message.guild?.id!;
 		const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
 		if (serverSettings === null) {
 			Logger.error(`Couldn't get server settings for ${guildId}`);
@@ -59,9 +61,10 @@ export default class QuoteCommand implements ICommand {
 					value: reason,
 				},
 			],
-		});
+    });
 	
-		channel.send({embed});
+    const botMessage = await channel.send({ embed });
+    QuotesRepository.Add(guildId, botMessage.id, null, QuoteState.Pending)
 	}
 
 }

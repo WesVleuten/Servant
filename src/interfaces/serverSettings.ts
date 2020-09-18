@@ -19,5 +19,8 @@ export default interface ServerSettings {
 	
 	quoteThreshold: number;
 	quoteEmoji: string|null;
-	quoteChannel: string|null;
+  quoteChannel: string | null;
+  
+	muteRole: string|null;
+	muteChannel: string|null;
 }

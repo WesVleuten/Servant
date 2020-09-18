@@ -2,9 +2,11 @@ import { Client as DiscordClient, MessageReaction, User, PartialUser } from "dis
 import ServerSettingsRepository from "../repository/serverSettings";
 import { getTextChannel } from "../lib/util";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
+import QuotesRepository from "../repository/quotes";
+import { QuoteState } from "../interfaces/quoteStateUnum";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
-	const guildId = messageReaction.message.guild?.id;
+	const guildId = messageReaction.message.guild?.id!;
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
 	if (serverSettings === null) {
 		return;
@@ -38,5 +40,6 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
 		],
 	});
 
-	channel.send({embed});
+  const botMessage = await channel.send({ embed });
+  QuotesRepository.Add(guildId, botMessage.id, messageReaction.message.id, QuoteState.Quoted)
 }

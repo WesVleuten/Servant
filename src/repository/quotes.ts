@@ -3,12 +3,13 @@ import Database from "../lib/database";
 
 export default class QuotesRepository {
 
-	static async Add(guildId: number, messageId: number, state: QuoteState) {
+	static async Add(guildId: string, botMessageId: string, quotedMessageId: string|null, state: QuoteState) {
 		const database = Database.getInstance();
 
 		await database.query("INSERT INTO Quotes SET ?", [{
-			guildId: guildId,
-			messageId: messageId,
+      guildId: guildId,
+      botMessageId: botMessageId,
+			quotedMessageId: quotedMessageId,
 			state: state,
 		}]);
 	}
