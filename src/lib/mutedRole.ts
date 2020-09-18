@@ -16,8 +16,8 @@ export async function SetMutedPermissions(mutedRole: Role) {
 
 export async function SetMutedPermissionsForChannel(mutedRole: Role, channel: GuildChannel, muteChannelId: string|null) {
 	if (!muteChannelId !== null && channel.id === muteChannelId) {
-    await channel.createOverwrite(mutedRole, {
-      VIEW_CHANNEL: true,
+		await channel.createOverwrite(mutedRole, {
+			VIEW_CHANNEL: true,
 			SEND_MESSAGES: true,
 			ADD_REACTIONS: false
 		}, "Automatic mute role permissions");
