@@ -23,23 +23,45 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
 	const channel = getTextChannel(discordClient, serverSettings.quoteChannel);
 	if (channel === null) {
 		return;
-	}
-	
-	const embed = createMessageEmbed({
-		color: 0xFFA500,
-		author: `${Buffer.from(serverSettings.quoteEmoji, 'base64')} Quote`,
-		fields: [
-			{
-				key: "User",
-				value:`${messageReaction.message.author}`,
-			},
-			{
-				key: "Quote",
-				value: messageReaction.message.content,
-			},
-		],
-	});
+  }
+  
+  const quote = await QuotesRepository.Get(guildId!, messageReaction.message.id);
+  if (!quote) {
+    const embed = createMessageEmbed({
+      color: 0xFFA500,
+      author: `${Buffer.from(serverSettings.quoteEmoji, 'base64')} Quote`,
+      fields: [
+        {
+          key: "User",
+          value:`${messageReaction.message.author}`,
+        },
+        {
+          key: "Quote",
+          value: messageReaction.message.content,
+        },
+      ],
+    });
 
-  const botMessage = await channel.send({ embed });
-  QuotesRepository.Add(guildId, botMessage.id, messageReaction.message.id, QuoteState.Quoted)
+    const botMessage = await channel.send({ embed });
+    QuotesRepository.Add(guildId, botMessage.id, messageReaction.message.id, QuoteState.Quoted)
+  } else { 
+    const embed = createMessageEmbed({
+      color: 0xFFA500,
+      author: `${Buffer.from(serverSettings.quoteEmoji, 'base64')} Quote`,
+      fields: [
+        {
+          key: "User",
+          value: messageReaction.message.embeds[0].fields["User"],
+        },
+        {
+          key: "Quote",
+          value: messageReaction.message.embeds[0].fields["Quote"],
+        },
+      ],
+    });
+    
+    const botMessage = await channel.send({ embed });
+    QuotesRepository.Delete(guildId!, quote.botMessageId)
+    QuotesRepository.Add(guildId!, botMessage.id, null, QuoteState.Quoted)	
+  }
 }

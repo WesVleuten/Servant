@@ -12,11 +12,11 @@ services:
     command: --init-file /data/application/init.sql --default-authentication-plugin=mysql_native_password
     volumes:
       - ./databaseCreation.sql:/data/application/init.sql
-      - servant_db4:/var/lib/mysql
+      - servant_db6:/var/lib/mysql
     environment: 
       - MYSQL_ROOT_PASSWORD=servant
       - MYSQL_DATABASE=servant
       - MYSQL_USER=dev
       - MYSQL_PASSWORD=dev
 volumes:
-  servant_db4:
+  servant_db6:

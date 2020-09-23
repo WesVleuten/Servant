@@ -24,7 +24,7 @@ export default class QuoteCommand implements ICommand {
 			return;
 		}
 
-		const guildId = message.guild?.id!;
+		const guildId = message.guild?.id;
 		const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
 		if (serverSettings === null) {
 			Logger.error(`Couldn't get server settings for ${guildId}`);
@@ -45,26 +45,26 @@ export default class QuoteCommand implements ICommand {
 			return;
 		}
 		
-		const reason = args.slice(1).join(" ");
-		
-		const embed = createMessageEmbed({
-			color: 0xFFA500,
-			author: `${Buffer.from(serverSettings.quoteEmoji, 'base64')} Proposed quote`,
-			description: `Vote on this quote with ${Buffer.from(serverSettings.quoteEmoji, 'base64')}`,
-			fields: [
-				{
-					key: "User",
-					value:`${guildMember}`,
-				},
-				{
-					key: "Quote",
-					value: reason,
-				},
-			],
+    const reason = args.slice(1).join(" ");
+    
+    const embed = createMessageEmbed({
+      color: 0xFFA500,
+      author: `${Buffer.from(serverSettings.quoteEmoji, 'base64')} Proposed quote`,
+      description: `Vote on this quote with ${Buffer.from(serverSettings.quoteEmoji, 'base64')}`,
+      fields: [
+        {
+          key: "User",
+          value: `${guildMember}`,
+        },
+        {
+          key: "Quote",
+          value: reason,
+        },
+      ],
     });
-	
+  
     const botMessage = await channel.send({ embed });
-    QuotesRepository.Add(guildId, botMessage.id, null, QuoteState.Pending)
+    QuotesRepository.Add(guildId!, botMessage.id, null, QuoteState.Pending)	
 	}
 
 }
