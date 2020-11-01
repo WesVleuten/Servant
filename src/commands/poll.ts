@@ -31,6 +31,7 @@ export default class PollCommand implements ICommand {
 		const sendMessage = await message.channel.send({embed});
 		await sendMessage.react(this.agreeEmoji);
 		await sendMessage.react(this.disagreeEmoji);
+		await message.delete();
 		return;
 	}
 
