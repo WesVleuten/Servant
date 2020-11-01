@@ -12,11 +12,11 @@ export default async function ReadyEvent(discordClient: DiscordClient) {
 	
 		let serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id)
 		if (serverSettings === null) {
-			ServerSettingsRepository.Create(guild.id);
+			await ServerSettingsRepository.Create(guild.id);
+			serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id)
 			Logger.info(`Created guild ${guild.id}`);
 		}
 		
-		serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id)
 		if (serverSettings?.muteRole !== null) {
 			const muteRole = guild.roles.resolve(serverSettings!.muteRole)
 			if (muteRole === null) {

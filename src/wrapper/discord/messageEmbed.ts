@@ -7,6 +7,7 @@ interface Field {
 }
 
 interface Embed {
+	title?: string;
 	color?: number|'random';
 	author?: string;
 	authorIcon?: string;
@@ -14,6 +15,9 @@ interface Embed {
 	footerIcon?: string;
 	image?: string;
 	description?: string;
+	thumbnail?: string;
+
+	hideTimestamp?: boolean;
 
 	fields?: Field[];
 }
@@ -32,6 +36,10 @@ function safeFieldValue(input: string): string {
 export default function createMessageEmbed(input: Embed): MessageEmbed {
 
 	const embed = new MessageEmbed();
+
+	if (input.title != undefined) {
+		embed.setTitle(input.title)
+	}
 
 	if (input.color != undefined) {
 		if (input.color == 'random') {
@@ -53,6 +61,10 @@ export default function createMessageEmbed(input: Embed): MessageEmbed {
 		embed.setImage(input.image);
 	}
 
+	if (input.thumbnail != undefined) {
+		embed.setThumbnail(input.thumbnail);
+	}
+
 	if (input.description != undefined) {
 		embed.setDescription(input.description);
 	}
@@ -63,6 +75,8 @@ export default function createMessageEmbed(input: Embed): MessageEmbed {
 		}
 	}
 
-	embed.setTimestamp();
+	if (input.hideTimestamp !== false) {
+		embed.setTimestamp();
+	}
 	return embed;
 }

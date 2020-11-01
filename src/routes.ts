@@ -18,6 +18,7 @@ import LiveResetCommand from "./commands/resetlive";
 import PresenceUpdateEvent from "./events/presenceUpdate";
 import MuteCommand from "./commands/mute";
 import UnmuteCommand from "./commands/unmute";
+import PollCommand from "./commands/poll";
 
 const Commands: ICommand[] = [
 	HelpCommand,
@@ -26,7 +27,8 @@ const Commands: ICommand[] = [
 	ConfigCommand,
 	LiveResetCommand,
 	MuteCommand,
-	UnmuteCommand
+	UnmuteCommand,
+	PollCommand
 ].map(x => new x());
 
 const EventBind = {
