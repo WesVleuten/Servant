@@ -8,6 +8,15 @@ import createMessageEmbed from "../wrapper/discord/messageEmbed";
 
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
+/*
+ * MessageDeleteEvent
+ *
+ * It is not possible to exactly know who deleted a message, but by scanning
+ * the audit logs we can get a pretty clear idea of who was responsible.
+ * The "Deleted By" field is "Unkown" if we cannot figure out who deleted it
+ */
+
+
 export default async function MessageDeleteEvent(discordClient: DiscordClient, message: Message) {
 	if (!message.guild) return; // DM message
 
@@ -24,11 +33,17 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 	await sleep(1000); // wait 1sec for audit logs to generate
 
 	const guild = message.guild;
+
+	// fetch last 7 audit logs
 	const auditLogs = await guild.fetchAuditLogs({
 		limit: 7,
 		type: 'MESSAGE_DELETE',
 	});
 
+	// search through audit logs and filter out any irrelevant logs
+	//  - match on target and author
+	//  - match on channel
+	//  - shouldn't be too long ago
 	const auditEntry = auditLogs.entries.find(x => {
 		const target: any = x.target;
 		const extra: any = x.extra;
@@ -37,6 +52,7 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 			Date.now() - x.createdTimestamp < 20000
 	});
 
+	// set the deleted by tag IF we found who deleted it
 	const deletedBy = auditEntry ? auditEntry.executor.tag : 'Unkown';
 
 	// add action to database
