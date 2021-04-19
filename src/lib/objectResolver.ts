@@ -79,7 +79,11 @@ export default class ObjectResolver {
 	}
 
 	async GetGuildMember(guild: Guild, id: string): Promise<GuildMember|null> {
-		return guild.members.resolve(id);
+		const cached = guild.members.cache.get(id);
+		if (cached) {
+			return cached;
+		}
+		return guild.members.fetch(id);
 	}
 
 	async ResolveGuildChannel(guild: Guild, query: string): Promise<GuildChannel|null> {

@@ -6,6 +6,7 @@
 	},
 	"discord": {
 		"clientId": "",
+		"publicKey": "",
 		"clientSecret": "",
 		"botToken": ""
 	},

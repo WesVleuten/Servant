@@ -1,5 +1,6 @@
-import ReadyEvent from './events/ready';
 import { Client as DiscordClient } from 'discord.js';
+import { DiscordInteractions } from 'slash-commands';
+import ReadyEvent from './events/ready';
 import MessageDeleteEvent from './events/messageDelete';
 import MessageUpdateEvent from './events/messageUpdate';
 import GuildCreateEvent from './events/guildCreate';
@@ -9,6 +10,12 @@ import VoiceStateUpdateEvent from './events/voiceStateUpdate';
 import MessageDeleteBulkEvent from './events/messageDeleteBulk';
 import ErrorEvent from './events/error';
 import MessageEvent from './events/message';
+import InteractionEvent from './events/interactions';
+
+import { ISlashCommand } from './slash/base';
+import MuteSlashCommand from './slash/mute';
+import PollSlashCommand from './slash/poll';
+
 import { ICommand, PermissionLevel } from './commands/base';
 import HelpCommand from './commands/help';
 import PurgeCommand from './commands/purge';
@@ -19,6 +26,11 @@ import PresenceUpdateEvent from './events/presenceUpdate';
 import MuteCommand from './commands/mute';
 import UnmuteCommand from './commands/unmute';
 import PollCommand from './commands/poll';
+
+const SlashCommands: ISlashCommand[] = [
+	PollSlashCommand,
+	MuteSlashCommand,
+].map(x => new x());
 
 const Commands: ICommand[] = [
 	HelpCommand,
@@ -54,6 +66,8 @@ export async function BindRoutes(discordClient: DiscordClient): Promise<void> {
 		const eventFunction = EventBind[eventName];
 		discordClient.on(eventName, eventFunction.bind(null, discordClient));
 	}
+	
+	InteractionEvent(discordClient);
 }
 
 export async function getCommand(commandStr: string): Promise<ICommand|null> {
@@ -75,3 +89,28 @@ export async function getCommands(permissionLevel: PermissionLevel): Promise<ICo
 	return commands;
 }
 
+export async function registerSlashCommand(interaction: DiscordInteractions) {
+	const commands = await interaction.getApplicationCommands()
+
+	const bindings: {[key: string]: string;} = {};
+	for (const cmd of commands) {
+		bindings[cmd.name] = cmd.id;
+	}
+
+	for (const cmd of SlashCommands) {
+		interaction.createApplicationCommand({
+			name: cmd.name,
+			description: cmd.description,
+			options: cmd.options.map(y => <any>y),
+		}, undefined, bindings[cmd.name] ?? undefined).catch(console.error);
+	}
+}
+
+export async function getSlashCommand(commandName: string): Promise<ISlashCommand|null> {
+	for (const scmd of SlashCommands) {
+		if (scmd.name == commandName) {
+			return scmd;
+		}
+	}
+	return null;
+}
