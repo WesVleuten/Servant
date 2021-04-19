@@ -31,10 +31,7 @@ export default class ObjectResolver {
 		}
 
 		// Check if its an ID
-		console.log("CHECKINGl", query, isNumeric(query));
 		if (isNumeric(query)) {
-			const e = await this.GetGuildMember(guild, query);
-			console.log(e);
 			return this.GetGuildMember(guild, query);
 		}
 
