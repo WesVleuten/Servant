@@ -1,4 +1,3 @@
-
 import { ICommand, PermissionLevel } from './base';
 import { Message, Client } from 'discord.js';
 import ServerSettingsRepository from '../repository/serverSettings';

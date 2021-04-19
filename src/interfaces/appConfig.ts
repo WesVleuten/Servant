@@ -21,5 +21,6 @@ export interface DiscordConfig {
 	clientId: string;
 	clientSecret: string;
 	botToken: string;
+	publicKey: string;
 }
 

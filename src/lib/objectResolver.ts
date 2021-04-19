@@ -31,7 +31,10 @@ export default class ObjectResolver {
 		}
 
 		// Check if its an ID
+		console.log("CHECKINGl", query, isNumeric(query));
 		if (isNumeric(query)) {
+			const e = await this.GetGuildMember(guild, query);
+			console.log(e);
 			return this.GetGuildMember(guild, query);
 		}
 
@@ -79,7 +82,11 @@ export default class ObjectResolver {
 	}
 
 	async GetGuildMember(guild: Guild, id: string): Promise<GuildMember|null> {
-		return guild.members.resolve(id);
+		const cached = guild.members.cache.get(id);
+		if (cached) {
+			return cached;
+		}
+		return guild.members.fetch(id);
 	}
 
 	async ResolveGuildChannel(guild: Guild, query: string): Promise<GuildChannel|null> {

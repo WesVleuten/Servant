@@ -4,8 +4,16 @@ if (parseInt(process.version.slice(1).split('.')[0], 10) < 12) {
 
 import { Client as DiscordClient } from 'discord.js';
 import Config from './lib/config';
-import { BindRoutes } from './routes';
+import { BindRoutes, registerSlashCommand } from './routes';
+import { DiscordInteractions } from "slash-commands";
 
 const discord = new DiscordClient();
 BindRoutes(discord);
 discord.login(Config.discord.botToken);
+
+const interaction = new DiscordInteractions({
+	applicationId: Config.discord.clientId,
+	authToken: Config.discord.botToken,
+	publicKey: Config.discord.publicKey,
+});
+registerSlashCommand(interaction);

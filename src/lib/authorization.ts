@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { GuildMember, Guild } from 'discord.js';
 import { PermissionLevel } from '../commands/base';
 import config from '../lib/config';
 import ServerSettingsRepository from '../repository/serverSettings';
@@ -22,3 +22,24 @@ export default async function GetPermissionLevel(member: GuildMember): Promise<P
 
 	return permissionLevel;
 }
+
+export async function GetPermissionLevelForRoles(guild: Guild, userId: string, roles: string[]) {
+	const serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id);
+	if (serverSettings === null) {
+		return PermissionLevel.User;
+	}
+
+	let permissionLevel = PermissionLevel.User;
+	if (userId === config.botOwnerUserId) {
+		permissionLevel = PermissionLevel.BotOwner;
+	} else if (userId === guild.ownerID) {
+		permissionLevel = PermissionLevel.Administrator;
+	} else if (serverSettings.adminRole && roles.indexOf(serverSettings.adminRole) !== -1) {
+		permissionLevel = PermissionLevel.Administrator;
+	} else if (serverSettings.moderatorRole && roles.indexOf(serverSettings.moderatorRole) !== -1) {
+		permissionLevel = PermissionLevel.Moderator;
+	}
+
+	return permissionLevel;
+}
+
