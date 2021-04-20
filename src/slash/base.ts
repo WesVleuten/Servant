@@ -1,14 +1,18 @@
 import {
 	Client as DiscordClient,
 	Guild as DiscordGuild,
-	User as DiscordUser
+	User as DiscordUser,
+	TextChannel as DiscordTextChannel,
+	Message as DiscordMessage,
 } from 'discord.js';
 
 export {
 	DiscordClient,
 	DiscordGuild,
 	DiscordUser,
-}
+	DiscordTextChannel,
+	DiscordMessage
+};
 
 export enum PermissionLevel {
 	BotOwner		=  0,
@@ -37,7 +41,14 @@ export interface SlashCommandArgument {
 export interface Context {
 	guild?: Guild;
 	user: User;
+	channel: Channel;
 	channel_id: string;
+}
+
+export interface Channel {
+	discordObject: DiscordTextChannel
+	id: string;
+	send: (message: ResponseMessage) => Promise<DiscordMessage>;
 }
 
 export interface Guild {
@@ -52,19 +63,24 @@ export interface User {
 	discordObject: DiscordUser
 }
 
-export interface SlashCommandResponse {
+export interface ResponseMessage {
 	title?: string;
 	description?: string;
 	url?: string;
 	timestamp?: string;
 	color?: number;
-	footer?: {text: string};
-	author?: {name: string};
+	footer?: string;
+	footerIcon?: string;
+	author?: string;
+	authorIcon?: string;
+	image?: string;
+	thumbnail?: string;
 	fields?: {
 		name: string;
 		value: string;
 		inline?: boolean;
 	}[];
+	hideTimestamp?: boolean;
 
 	deleteTimeout?: number;
 }
@@ -74,7 +90,7 @@ export interface ISlashCommand {
 	description: string;
 	permissionLevel: PermissionLevel
 	guildOnly?: boolean;
-	
+
 	options: {
 		name: string;
 		description: string;
@@ -82,5 +98,5 @@ export interface ISlashCommand {
 		required?: boolean;
 	}[];
 
-	run: (discordClient: DiscordClient, ctx: Context, args: SlashCommandArgument[]) => Promise<SlashCommandResponse|undefined>;
+	run: (discordClient: DiscordClient, ctx: Context, args: SlashCommandArgument[]) => Promise<ResponseMessage|undefined>;
 }

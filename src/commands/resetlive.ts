@@ -37,7 +37,7 @@ export default class LiveResetCommand implements ICommand {
 		let removals = 0;
 
 		const members = await guild.members.fetch({ limit: 1000, time: 1000 });
-		for (const memberline of members) {
+		for (const memberline of members.array()) {
 			const member = memberline[1];
 			const streamingActivity = member.presence.activities.find(activity => activity.type == 'STREAMING');
 			const whiteListed = await CheckIfWhitelisted(guildId, streamingActivity, member);

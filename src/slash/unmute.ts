@@ -10,17 +10,16 @@ import {
 
 import ServerSettingsRepository from '../repository/serverSettings';
 import MutedRepository from '../repository/muted';
-import { UnmuteWhenExpires } from '../lib/mutedRole';
 import ObjectResolver from '../lib/objectResolver';
 
-export default class MuteSlashCommand implements ISlashCommand {
+export default class UnmuteSlashCommand implements ISlashCommand {
 
-	name = 'mute';
-	description = 'Mute a member of the server';
+	name = 'unmute';
+	description = 'Unmute a member of the server';
 	permissionLevel = PermissionLevel.Moderator;
 	guildOnly = true;
 
-	usageText = '/mute <user> <time> <reason>';
+	usageText = '/unmute <user>';
 
 	options = [
 		{
@@ -29,18 +28,6 @@ export default class MuteSlashCommand implements ISlashCommand {
 			type: SlashCommandOptionType.USER,
 			required: true,
 		},
-		{
-			name: 'time',
-			description: 'How long the user should be muted',
-			type: SlashCommandOptionType.STRING,
-			required: true,
-		},
-		{
-			name: 'reason',
-			description: 'Reason why the user is muted',
-			type: SlashCommandOptionType.STRING,
-			required: false,
-		}
 	];
 
 	async run(discordClient: DiscordClient, ctx: Context, args: SlashCommandArgument[]): Promise<ResponseMessage|undefined> {
@@ -60,25 +47,11 @@ export default class MuteSlashCommand implements ISlashCommand {
 			};
 		}
 
-		if (args.length < 2) {
-			return {
-				title: 'Error',
-				description: 'Missing parameters',
-			};
-		}
-
 		const targetUser = args.find(x => x.name == 'user')?.value;
 		if (!targetUser) {
 			return {
 				title: 'Error',
 				description: 'Could not find target user',
-			};
-		}
-		const mutetime = args.find(x => x.name == 'time')?.value;
-		if (!mutetime) {
-			return {
-				title: 'Error',
-				description: 'Could not find mute time',
 			};
 		}
 
@@ -91,62 +64,21 @@ export default class MuteSlashCommand implements ISlashCommand {
 			};
 		}
 
-		if (guildMember.id === ctx.user.id) {
+		const mute = await MutedRepository.GetRunning(guild.id, guildMember.id);
+		if (mute === null) {
 			return {
 				title: 'Error',
-				description: 'You cannot mute yourself',
+				description: `User "${guildMember.user.tag}" is not muted`,
 			};
 		}
 
-		const date = this.parseDate(mutetime);
-		const reason = args.find(x => x.name == 'reason')?.value ?? 'No reason given';
-		const returner: ResponseMessage = {
-			author: 'Bot Mod',
-			description: 'Mute was successful',
-			fields: [
-				{
-					name: 'User',
-					value: `${guildMember.user.tag}`,
-					inline: true,
-				},
-				{
-					name: 'Date',
-					value: `${date.toUTCString()}`,
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: `${reason}`,
-					inline: false,
-				}
-			],
+		MutedRepository.SetUnmuted(mute.id, new Date());
+		const muteRole = await guild.discordObject.roles.fetch(serverSettings.muteRole);
+		guildMember.roles.remove(muteRole, 'Mute manually removed via command');
+		return {
+			title: 'Success',
+			description: 'User unmuted',
 		};
-
-		const muteRole = await ctx.guild.discordObject.roles.fetch(serverSettings.muteRole);
-		if (!muteRole) {
-			return {
-				title: 'Error',
-				description: 'Cant find the mute role',
-			};
-		}
-
-		const oldMute = await MutedRepository.GetRunning(guildId, guildMember.id);
-		if (oldMute !== null) {
-			await MutedRepository.SetUnmuted(oldMute.id, new Date());
-		}
-
-		const mute = await MutedRepository.Add(guildId, guildMember.id, ctx.user.id, new Date(), date, reason);
-		if (!mute) {
-			return {
-				title: 'Error',
-				description: 'Couldnt add mute',
-			};
-		}
-
-		await guildMember.roles.add(muteRole, 'Automatically muted');
-
-		UnmuteWhenExpires(ctx.guild.discordObject, muteRole, mute);
-		return returner;
 	}
 
 	parseDate(str: string): Date {

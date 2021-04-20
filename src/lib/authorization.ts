@@ -23,7 +23,7 @@ export default async function GetPermissionLevel(member: GuildMember): Promise<P
 	return permissionLevel;
 }
 
-export async function GetPermissionLevelForRoles(guild: Guild, userId: string, roles: string[]) {
+export async function GetPermissionLevelForRoles(guild: Guild, userId: string, roles: string[]): Promise<PermissionLevel> {
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(guild.id);
 	if (serverSettings === null) {
 		return PermissionLevel.User;

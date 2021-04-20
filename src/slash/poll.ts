@@ -1,19 +1,13 @@
+import { MessageReaction as DiscordMessageReaction } from 'discord.js';
 import {
 	ISlashCommand,
 	PermissionLevel,
 	SlashCommandOptionType,
 	SlashCommandArgument,
-	SlashCommandResponse,
+	ResponseMessage,
 	Context,
 	DiscordClient,
 } from './base';
-
-import ServerSettingsRepository from '../repository/serverSettings';
-import MutedRepository from '../repository/muted';
-import { UnmuteWhenExpires } from '../lib/mutedRole';
-import ObjectResolver from '../lib/objectResolver'
-import createMessageEmbed from '../wrapper/discord/messageEmbed';
-import { TextChannel } from 'discord.js';
 
 export default class PollSlashCommand implements ISlashCommand {
 
@@ -66,12 +60,12 @@ export default class PollSlashCommand implements ISlashCommand {
 	agreeEmoji = '772552297075048468';
 	disagreeEmoji = '772552252782411816';
 
-	async run(discordClient: DiscordClient, ctx: Context, args: SlashCommandArgument[]): Promise<SlashCommandResponse|undefined> {
+	async run(discordClient: DiscordClient, ctx: Context, args: SlashCommandArgument[]): Promise<ResponseMessage|undefined> {
 		if (!ctx.guild) {
 			return;
 		}
 
-		let pollContent = args.find(x => x.name == "question")?.value;
+		let pollContent = args.find(x => x.name == 'question')?.value;
 		if (!pollContent) {
 			return;
 		}
@@ -81,7 +75,7 @@ export default class PollSlashCommand implements ISlashCommand {
 		const usedIcons: string[] = [];
 
 		if (args.length > 1) {
-			let options = ['', '', '', '', ''];
+			const options = ['', '', '', '', ''];
 			for (let i = 1; i < 6; i++) {
 				const value = args.find(x => x.name == 'option' + i)?.value;
 				if (value) {
@@ -92,22 +86,16 @@ export default class PollSlashCommand implements ISlashCommand {
 			pollContent += '\n\n' + options.filter(x => !!x).join('\n');
 		}
 
-		const embed = createMessageEmbed({
+		const embed: ResponseMessage = {
 			color: 0x33CC33,
 			title: 'QuickPoll',
 			description: pollContent,
 			thumbnail: 'https://i.ibb.co/Y08zHnb/Pika.png',
 			footer: 'Reminder: Use */poll <question>* to create a new poll'
-		});
+		};
 
-		const guildchannel = ctx.guild.discordObject.channels.resolve(ctx.channel_id);
-		if (!guildchannel || guildchannel.type !== 'text') {
-			return;
-		}
-		const channel = guildchannel as TextChannel;
-
-		const sendMessage = await channel.send({embed});
-		const promises: Promise<any>[] = [];
+		const sendMessage = await ctx.channel.send(embed);
+		const promises: Promise<DiscordMessageReaction>[] = [];
 		if (args.length > 1) {
 			for (const i of usedIcons) {
 				promises.push(sendMessage.react(i));
@@ -120,7 +108,7 @@ export default class PollSlashCommand implements ISlashCommand {
 
 		return {
 			title: 'Poll created',
-			footer: { text: 'Auto deleting this message in 10 seconds...' },
+			footer: 'Auto deleting this message in 10 seconds...',
 			deleteTimeout: 10000,
 		};
 	}
