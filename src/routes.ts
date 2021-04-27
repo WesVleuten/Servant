@@ -1,5 +1,6 @@
 import { Client as DiscordClient } from 'discord.js';
-import { DiscordInteractions } from 'slash-commands';
+import { DiscordInteractions, ApplicationCommandOption } from 'slash-commands';
+import Logger from './lib/log';
 import ReadyEvent from './events/ready';
 import MessageDeleteEvent from './events/messageDelete';
 import MessageUpdateEvent from './events/messageUpdate';
@@ -15,6 +16,9 @@ import InteractionEvent from './events/interactions';
 import { ISlashCommand } from './slash/base';
 import MuteSlashCommand from './slash/mute';
 import PollSlashCommand from './slash/poll';
+import UnmuteSlashCommand from './slash/unmute';
+import StatsSlashCommand from './slash/stats';
+import PurgeSlashCommand from './slash/purge';
 
 import { ICommand, PermissionLevel } from './commands/base';
 import HelpCommand from './commands/help';
@@ -30,6 +34,9 @@ import PollCommand from './commands/poll';
 const SlashCommands: ISlashCommand[] = [
 	PollSlashCommand,
 	MuteSlashCommand,
+	UnmuteSlashCommand,
+	StatsSlashCommand,
+	PurgeSlashCommand,
 ].map(x => new x());
 
 const Commands: ICommand[] = [
@@ -66,7 +73,7 @@ export async function BindRoutes(discordClient: DiscordClient): Promise<void> {
 		const eventFunction = EventBind[eventName];
 		discordClient.on(eventName, eventFunction.bind(null, discordClient));
 	}
-	
+
 	InteractionEvent(discordClient);
 }
 
@@ -89,8 +96,8 @@ export async function getCommands(permissionLevel: PermissionLevel): Promise<ICo
 	return commands;
 }
 
-export async function registerSlashCommand(interaction: DiscordInteractions) {
-	const commands = await interaction.getApplicationCommands()
+export async function registerSlashCommand(interaction: DiscordInteractions): Promise<void> {
+	const commands = await interaction.getApplicationCommands();
 
 	const bindings: {[key: string]: string;} = {};
 	for (const cmd of commands) {
@@ -98,10 +105,13 @@ export async function registerSlashCommand(interaction: DiscordInteractions) {
 	}
 
 	for (const cmd of SlashCommands) {
+		const action = !bindings[cmd.name] ? 'create' : 'update';
+		Logger.info(action, cmd.name, bindings[cmd.name]);
+
 		interaction.createApplicationCommand({
 			name: cmd.name,
 			description: cmd.description,
-			options: cmd.options.map(y => <any>y),
+			options: cmd.options.map(y => y as unknown as ApplicationCommandOption),
 		}, undefined, bindings[cmd.name] ?? undefined).catch(console.error);
 	}
 }
