@@ -182,11 +182,11 @@ export default function interactionEvent(discord: DiscordClient): void {
 				},
 				discordObject: channel,
 			}
-		}, interaction.data.options.map(x => ({
+		}, (interaction.data?.options?.map(x => ({
 			name: x.name,
 			type: x.type as unknown as SlashCommandOptionType,
 			value: x.value,
-		})) as SlashCommandArgument[]);
+		})) ?? []) as SlashCommandArgument[]);
 
 		if (!response) {
 			response = {

@@ -18,6 +18,7 @@ import MuteSlashCommand from './slash/mute';
 import PollSlashCommand from './slash/poll';
 import UnmuteSlashCommand from './slash/unmute';
 import StatsSlashCommand from './slash/stats';
+import PurgeSlashCommand from './slash/purge';
 
 import { ICommand, PermissionLevel } from './commands/base';
 import HelpCommand from './commands/help';
@@ -34,7 +35,8 @@ const SlashCommands: ISlashCommand[] = [
 	PollSlashCommand,
 	MuteSlashCommand,
 	UnmuteSlashCommand,
-    StatsSlashCommand,
+	StatsSlashCommand,
+	PurgeSlashCommand,
 ].map(x => new x());
 
 const Commands: ICommand[] = [
@@ -103,8 +105,8 @@ export async function registerSlashCommand(interaction: DiscordInteractions): Pr
 	}
 
 	for (const cmd of SlashCommands) {
-        const action = !bindings[cmd.name] ? 'create' : 'update';
-        Logger.info(action, cmd.name, bindings[cmd.name]);
+		const action = !bindings[cmd.name] ? 'create' : 'update';
+		Logger.info(action, cmd.name, bindings[cmd.name]);
 
 		interaction.createApplicationCommand({
 			name: cmd.name,
