@@ -56,7 +56,6 @@ CREATE TABLE `Quotes` (
   `guildId` VARCHAR(255) NOT NULL,
   `botMessageId` VARCHAR(255) NOT NULL,
   `quotedMessageId` VARCHAR(255),
-  `state` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

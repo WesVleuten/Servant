@@ -236,7 +236,6 @@ export default class ConfigCommand implements ICommand {
 					ss.adminRole = adminRole.id;
 				}
 			} else if (key == 'moderatorRole') {
-				message.reply('Updating mod role');
 				if (value == 'null') {
 					ss.moderatorRole = null;
 				} else {
@@ -248,7 +247,6 @@ export default class ConfigCommand implements ICommand {
 					ss.moderatorRole = modRole.id;
 				}
 			} else if (key == 'quoteThreshold') {
-				message.reply('Updating threshold');
 				if (value == 'null') {
 					ss.quoteThreshold = 10;
 				} else {
@@ -260,14 +258,12 @@ export default class ConfigCommand implements ICommand {
 					ss.quoteThreshold = threshold;
 				}
 			} else if (key == 'quoteEmoji') {
-				message.reply('Updating emoji');
 				if (value == 'null') {
 					ss.quoteChannel = null;
 				} else {
 					ss.quoteEmoji = Buffer.from(value).toString('base64');
 				}
 			} else if (key == 'quoteChannel') {
-				message.reply('Updating quote channel');
 				if (value == 'null') {
 					ss.quoteChannel = null;
 				} else {

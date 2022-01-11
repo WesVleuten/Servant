@@ -5,6 +5,7 @@ import Logger from '../lib/log';
 import { ActionType } from '../interfaces/actionTypeEnum';
 import { getTextChannel } from '../lib/util';
 import createMessageEmbed from '../wrapper/discord/messageEmbed';
+import QuotesRepository from '../repository/quotes';
 
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
@@ -28,14 +29,17 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		Logger.error(`Couldnt get server settings for ${message?.guild?.id}`);
 		return;
 	}
+	
+	const guild = message.guild;
+
+	// Call delete on quotes repository in case it's a quote
+	QuotesRepository.Delete(guild.id, message.id)
 
 	if (!serverSettings.logChannel) {
 		return;
 	}
 
 	await sleep(1000); // wait 1sec for audit logs to generate
-
-	const guild = message.guild;
 
 	// fetch last 7 audit logs
 	const auditLogs = await guild.fetchAuditLogs({

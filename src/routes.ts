@@ -31,7 +31,6 @@ import PresenceUpdateEvent from './events/presenceUpdate';
 import MuteCommand from './commands/mute';
 import UnmuteCommand from './commands/unmute';
 import PollCommand from './commands/poll';
-import QuoteCommand from "./commands/quote";
 
 const SlashCommands: ISlashCommand[] = [
 	PollSlashCommand,
@@ -46,7 +45,6 @@ const Commands: ICommand[] = [
 	PurgeCommand,
 	StatsCommand,
 	ConfigCommand,
-  	QuoteCommand,
 	LiveResetCommand,
 	MuteCommand,
 	UnmuteCommand,
