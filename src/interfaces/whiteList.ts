@@ -1,7 +1,7 @@
-import WhiteListedGame from "./whiteListedGame";
-import WhiteListedRole from "./whiteListedRole";
+import { WhiteListedGame } from './whiteListedGame';
+import { WhiteListedRole } from './whiteListedRole';
 
-export default interface WhiteList {
+export interface WhiteList {
 	games: WhiteListedGame[];
 	roles: WhiteListedRole[];
 }

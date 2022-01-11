@@ -1,4 +1,4 @@
-export default interface ApplicationConfig {
+export interface ApplicationConfig {
 	botOwnerUserId: string;
 	twitch: TwitchConfig;
 	database: DatabaseConfig;
@@ -21,4 +21,6 @@ export interface DiscordConfig {
 	clientId: string;
 	clientSecret: string;
 	botToken: string;
+	publicKey: string;
 }
+

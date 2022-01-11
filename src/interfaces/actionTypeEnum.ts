@@ -1,6 +1,6 @@
 export enum ActionType {
 	Unkown			= 0,
-	
+
 	UserBan			= 1,
 	UserKick		= 2,
 	UserMute		= 3,

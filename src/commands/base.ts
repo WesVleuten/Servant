@@ -1,4 +1,4 @@
-import { Message, Client } from "discord.js";
+import { Message, Client } from 'discord.js';
 
 export enum PermissionLevel {
 	BotOwner		=  0,

@@ -20,13 +20,13 @@ export default async function fetchRetry(input: RequestInfo, init: RequestInitEx
 			await sleep(retryDelay);
 			return tryFetch(attempt + 1);
 		} else {
-			throw new Error('Retry attempts exeeded maximum retries')
+			throw new Error('Retry attempts exeeded maximum retries');
 		}
 	};
 
 	const tryFetch = async attempt => {
 		try {
-			const response = await fetch(input, init)
+			const response = await fetch(input, init);
 
 			if (await retryOn(attempt, null, response)) {
 				return retry(attempt);

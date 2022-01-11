@@ -1,13 +1,11 @@
+import { Client as DiscordClient, Message, Collection, Snowflake } from 'discord.js';
+import ActionLogRepository from '../repository/actionLog';
+import ServerSettingsRepository from '../repository/serverSettings';
+import Logger from '../lib/log';
+import { ActionType } from '../interfaces/actionTypeEnum';
+import { getTextChannel } from '../lib/util';
 
-
-import { Client as DiscordClient, Message, Collection, Snowflake } from "discord.js";
-import ActionLogRepository from "../repository/actionLog";
-import ServerSettingsRepository from "../repository/serverSettings";
-import Logger from "../lib/log";
-import { ActionType } from "../interfaces/actionTypeEnum";
-import { getTextChannel } from "../lib/util";
-
-export default async function MessageDeleteBulkEvent(discordClient: DiscordClient, messages: Collection<Snowflake, Message>) {
+export default async function MessageDeleteBulkEvent(discordClient: DiscordClient, messages: Collection<Snowflake, Message>): Promise<void> {
 	const firstMessage = messages.first();
 	if (!firstMessage) {
 		return;
@@ -30,7 +28,7 @@ export default async function MessageDeleteBulkEvent(discordClient: DiscordClien
 	}
 
 	const messageArray = messages.array();
-	let output: string[] = [];
+	const output: string[] = [];
 	messageArray.forEach( c => {
 		output.push(`[${c.createdAt.toJSON()}] ${c.author.tag}: ${c.content}`);
 	});
@@ -38,5 +36,5 @@ export default async function MessageDeleteBulkEvent(discordClient: DiscordClien
 	// add action to database
 	await ActionLogRepository.Add(serverSettings.id, null, ActionType.MessagePurge, firstMessage.channel.id, output);
 
-	logchannel.send("--- MESSAGE PURGE\n" + output.join('\n'), {code: "asciidoc", split: { char: "\u200b" }});
+	logchannel.send('--- MESSAGE PURGE\n' + output.join('\n'), {code: 'asciidoc', split: { char: '\u200b' }});
 }

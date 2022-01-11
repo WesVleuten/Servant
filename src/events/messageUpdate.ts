@@ -1,12 +1,12 @@
-import { Client as DiscordClient, Message } from "discord.js";
-import ActionLogRepository from "../repository/actionLog";
-import ServerSettingsRepository from "../repository/serverSettings";
-import Logger from "../lib/log";
-import { ActionType } from "../interfaces/actionTypeEnum";
-import { getTextChannel } from "../lib/util";
-import createMessageEmbed from "../wrapper/discord/messageEmbed";
+import { Client as DiscordClient, Message } from 'discord.js';
+import ActionLogRepository from '../repository/actionLog';
+import ServerSettingsRepository from '../repository/serverSettings';
+import Logger from '../lib/log';
+import { ActionType } from '../interfaces/actionTypeEnum';
+import { getTextChannel } from '../lib/util';
+import createMessageEmbed from '../wrapper/discord/messageEmbed';
 
-export default async function MessageUpdateEvent(discordClient: DiscordClient, oldMessage: Message, newMessage: Message) {
+export default async function MessageUpdateEvent(discordClient: DiscordClient, oldMessage: Message, newMessage: Message): Promise<void> {
 	if (oldMessage.author.bot) return;
 
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(oldMessage?.guild?.id);
@@ -33,25 +33,25 @@ export default async function MessageUpdateEvent(discordClient: DiscordClient, o
 
 	const embed = createMessageEmbed({
 		color: 0xFFA500,
-		author: "Message Edited",
+		author: 'Message Edited',
 		footer: `User ID: ${newMessage.author.id}`,
 		fields: [
 			{
-				key: "User",
+				key: 'User',
 				value: newMessage.author.tag,
 				inline: true,
 			},
 			{
-				key: "Channel",
+				key: 'Channel',
 				value: `${oldMessage.channel}`,
 				inline: true,
 			},
 			{
-				key: "Before",
+				key: 'Before',
 				value: oldMessage.content,
 			},
 			{
-				key: "After",
+				key: 'After',
 				value: newMessage.content,
 			},
 		],

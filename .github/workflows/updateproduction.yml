@@ -1,0 +1,20 @@
+name: UpdateProduction
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - master
+
+jobs:
+  produpdate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run SSH command
+      uses: garygrossgarten/github-action-ssh@v0.5.0
+      with:
+        command: cd ${{ secrets.REMOTE_PATH }} && sh ./update.sh
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        privateKey: ${{ secrets.PRIVATE_KEY}}

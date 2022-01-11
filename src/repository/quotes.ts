@@ -1,5 +1,5 @@
 import { QuoteState } from "../interfaces/quoteStateUnum";
-import Quote from "../interfaces/quote";
+import { Quote } from "../interfaces/quote";
 import Database from "../lib/database";
 
 export default class QuotesRepository {

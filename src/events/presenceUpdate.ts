@@ -1,16 +1,14 @@
-import { Client as DiscordClient, Presence, GuildMember, Activity, Guild } from "discord.js";
-import ServerSettingsRepository from "../repository/serverSettings";
-import WhiteListRepository from "../repository/whiteList";
-import StreamTimeoutRepository from "../repository/streamTimeout";
-import Logger from "../lib/log";
-import TwitchClient from "../lib/twitch";
-import { getTextChannel } from "../lib/util";
-import createMessageEmbed from "../wrapper/discord/messageEmbed";
-import CheckIfWhitelisted from "../lib/checkWhitelist";
-import ServerSettings from "../interfaces/serverSettings";
-import GuildDeleteEvent from "./guildDelete";
+import { Client as DiscordClient, Presence, GuildMember, Activity, Guild } from 'discord.js';
+import ServerSettingsRepository from '../repository/serverSettings';
+import StreamTimeoutRepository from '../repository/streamTimeout';
+import Logger from '../lib/log';
+import TwitchClient from '../lib/twitch';
+import { getTextChannel } from '../lib/util';
+import createMessageEmbed from '../wrapper/discord/messageEmbed';
+import CheckIfWhitelisted from '../lib/checkWhitelist';
+import { ServerSettings } from '../interfaces/serverSettings';
 
-export default async function PresenceUpdateEvent(discordClient: DiscordClient, oldPresence: Presence | null, newPresence: Presence) {
+export default async function PresenceUpdateEvent(discordClient: DiscordClient, oldPresence: Presence | null, newPresence: Presence): Promise<void> {
 	const guildId = newPresence.guild?.id;
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
 	if (serverSettings === null) {
@@ -21,8 +19,8 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 	const guild = newPresence.guild;
 	const guildMember = newPresence.member;
 
-	const streamingActivity = newPresence.activities.find(activity => activity.type == "STREAMING");
-	const wasStreaming = oldPresence?.activities.some(activity => activity.type == "STREAMING") || false;
+	const streamingActivity = newPresence.activities.find(activity => activity.type == 'STREAMING');
+	const wasStreaming = oldPresence?.activities.some(activity => activity.type == 'STREAMING') || false;
 	let allowPromotion = true;
 
 	if (!guild || !guildMember) {
@@ -31,18 +29,18 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 	}
 
 	const whiteListed = await CheckIfWhitelisted(guild.id, streamingActivity, guildMember);
-	
+
 	if (serverSettings.streamShout !== null && whiteListed && serverSettings.streamTimeout > 0) {
-		const str = StreamTimeoutRepository.getInstance()
-		let timeout = str.get(guildMember.user.id)
+		const str = StreamTimeoutRepository.getInstance();
+		let timeout = str.get(guildMember.user.id);
 
 		if (streamingActivity !== undefined) {
 			if (timeout !== null && new Date() < timeout) {
 				allowPromotion = false;
 			} else {
-				timeout = new Date()
-				timeout.setTime(timeout.getTime() + (serverSettings.streamTimeout*3600000))
-				str.set(guildMember.user.id, timeout)
+				timeout = new Date();
+				timeout.setTime(timeout.getTime() + (serverSettings.streamTimeout*3600000));
+				str.set(guildMember.user.id, timeout);
 			}
 		}
 	}
@@ -52,7 +50,7 @@ export default async function PresenceUpdateEvent(discordClient: DiscordClient, 
 	}
 
 	if (allowPromotion && serverSettings.streamShout !== null) {
-		await StreamShout(discordClient, serverSettings, oldPresence, newPresence, wasStreaming, whiteListed, streamingActivity)
+		await StreamShout(discordClient, serverSettings, oldPresence, newPresence, wasStreaming, whiteListed, streamingActivity);
 	}
 }
 
@@ -65,27 +63,19 @@ async function LiveRole(discordClient: DiscordClient, serverSettings: ServerSett
 	const liverole = await guild.roles.fetch(serverSettings.streamLiveRole);
 
 	if (!liverole) {
-		Logger.error(`Role with key 'liverole' was not found`);
+		Logger.error('Role with key \'liverole\' was not found');
 		return;
 	}
 
 	if (guildMember.roles.cache.has(serverSettings.streamLiveRole) && !whiteListed) {
-		await guildMember.roles.remove(liverole)
+		await guildMember.roles.remove(liverole);
 	} else if (whiteListed) {
-		await guildMember.roles.add(liverole)
+		await guildMember.roles.add(liverole);
 	}
 }
 
 async function StreamShout(discordClient: DiscordClient, serverSettings: ServerSettings, oldPresence: Presence | null, newPresence: Presence, wasStreaming: boolean, whiteListed: boolean, streamingActivity: Activity|undefined) {
 	if (!oldPresence || !newPresence?.member || wasStreaming || !streamingActivity?.url || !whiteListed || !serverSettings?.streamShout) {
-		Logger.error(`Could not do streamshout`, {
-			oldPresence: !!oldPresence,
-			newPresence: !!newPresence?.member,
-			wasStreaming,
-			streamingActivityUrl: streamingActivity?.url,
-			whiteListed: whiteListed,
-			streamShout: !!serverSettings?.streamShout,
-		});
 		return;
 	}
 
@@ -93,17 +83,17 @@ async function StreamShout(discordClient: DiscordClient, serverSettings: ServerS
 
 	const promotionChannel = getTextChannel(discordClient, serverSettings.streamShout);
 	if (!promotionChannel) {
-		Logger.error(`Channel with key 'streamShout' was not found`);
+		Logger.error('Channel with key \'streamShout\' was not found');
 		return;
 	}
 
 	const streamUrl = streamingActivity.url;
 	const streamUsername = streamUrl.substr(22);
 
-	const twitch = TwitchClient.getInstance()
+	const twitch = TwitchClient.getInstance();
 	const stream = await twitch.getStreamer(streamUsername);
 	if (!stream) {
-		Logger.error(`Could not get stream from twitch`);
+		Logger.error('Could not get stream from twitch');
 		return;
 	}
 
@@ -117,11 +107,11 @@ async function StreamShout(discordClient: DiscordClient, serverSettings: ServerS
 		image: thumbnail,
 		fields: [
 			{
-				key: "**Stream Title:**",
+				key: '**Stream Title:**',
 				value: `${stream.title}`,
 			},
 			{
-				key: "**Stream URL:**",
+				key: '**Stream URL:**',
 				value: `${streamUrl}`,
 			},
 		],

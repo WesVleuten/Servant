@@ -1,12 +1,12 @@
-import { Client as DiscordClient, Message } from "discord.js";
-import ServerSettingsRepository from "../repository/serverSettings";
-import Logger from "../lib/log";
+import { Client as DiscordClient, Message } from 'discord.js';
+import ServerSettingsRepository from '../repository/serverSettings';
+import Logger from '../lib/log';
 import stringArgv from 'string-argv';
-import { getCommand } from "../routes";
-import GetPermissionLevel from "../lib/authorization";
-import MutedRepository from "../repository/muted";
+import { getCommand } from '../routes';
+import GetPermissionLevel from '../lib/authorization';
+import MutedRepository from '../repository/muted';
 
-export default async function MessageEvent(discordClient: DiscordClient, message: Message) {
+export default async function MessageEvent(discordClient: DiscordClient, message: Message): Promise<void> {
 	if (message.author.bot || message.content.length < 1 || message.content[0] !== ';') {
 		return;
 	}
@@ -26,12 +26,15 @@ export default async function MessageEvent(discordClient: DiscordClient, message
 	if (!cmd || !message.guild && cmd.guildOnly) {
 		return;
 	}
-	
-	const permissionLevel = await GetPermissionLevel(message.member!);
+
+	if (!message.member) {
+		return;
+	}
+	const permissionLevel = await GetPermissionLevel(message.member);
 	const mute = await MutedRepository.GetRunning(guildId, message.author.id);
 	if (permissionLevel > cmd.permissionLevel || mute !== null) {
 		return;
 	}
-	
+
 	await cmd.run(discordClient, message, args);
 }

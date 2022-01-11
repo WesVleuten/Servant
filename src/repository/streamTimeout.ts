@@ -1,7 +1,7 @@
 export default class StreamTimeoutRepository {
 
 	private static _instance: StreamTimeoutRepository;
-	public static getInstance() {
+	public static getInstance(): StreamTimeoutRepository {
 		if (this._instance == null) {
 			this._instance = new StreamTimeoutRepository();
 		}
@@ -22,3 +22,4 @@ export default class StreamTimeoutRepository {
 	}
 
 }
+

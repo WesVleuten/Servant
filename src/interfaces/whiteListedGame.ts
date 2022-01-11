@@ -1,4 +1,4 @@
-export default interface WhiteListedGame {
+export interface WhiteListedGame {
 	guildId: string;
 	id: string;
 	name: string;

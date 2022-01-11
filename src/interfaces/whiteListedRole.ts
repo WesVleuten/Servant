@@ -1,4 +1,4 @@
-export default interface WhiteListedRole {
+export interface WhiteListedRole {
 	guildId: string;
-  id: string;
+	id: string;
 }

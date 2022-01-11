@@ -1,4 +1,4 @@
-import { Client as DiscordClient, TextChannel } from "discord.js";
+import { Client as DiscordClient, TextChannel } from 'discord.js';
 
 export function getTextChannel(discordClient: DiscordClient, channelId: string): TextChannel|null {
 	const channel = discordClient.channels.cache.get(channelId);
@@ -8,7 +8,5 @@ export function getTextChannel(discordClient: DiscordClient, channelId: string):
 	// Weird typescript hack
 	// It seems to not return the correct type so we do an any convertion
 	// to fix that
-	const channelTypeConvert: any = channel;
-	const textChannel: TextChannel = channelTypeConvert;
-	return textChannel;
+	return <TextChannel>channel;
 }

@@ -1,18 +1,18 @@
-import { GuildMember } from "discord.js";
-import WhiteListRepository from "../repository/whiteList";
-import TwitchClient from "../lib/twitch";
+import { GuildMember, Activity } from 'discord.js';
+import WhiteListRepository from '../repository/whiteList';
+import TwitchClient from '../lib/twitch';
 
-export default async function CheckIfWhitelisted(guildId: string|undefined, streamingActivity: any, member: GuildMember): Promise<boolean> {
-	if (streamingActivity === undefined || !streamingActivity.url) { 
+export default async function CheckIfWhitelisted(guildId: string|undefined, streamingActivity: Activity | undefined, member: GuildMember): Promise<boolean> {
+	if (streamingActivity === undefined || !streamingActivity.url) {
 		return false;
 	}
 
 	const streamUrl = streamingActivity.url;
 	const streamUsername = streamUrl.substr(22);
-	
-	const twitch = TwitchClient.getInstance()
+
+	const twitch = TwitchClient.getInstance();
 	const stream = await twitch.getStreamer(streamUsername);
-	if (!stream) { 
+	if (!stream) {
 		return false;
 	}
 

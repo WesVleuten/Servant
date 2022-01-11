@@ -1,7 +1,12 @@
-import { ICommand, PermissionLevel } from './base';
-import { Message, Client, version as DiscordVersion } from 'discord.js';
+import {
+	ISlashCommand,
+	PermissionLevel,
+	ResponseMessage,
+	DiscordClient,
+} from './base';
+
 import * as fs from 'fs-extra';
-import createMessageEmbed from '../wrapper/discord/messageEmbed';
+import { version as DiscordVersion } from 'discord.js';
 
 async function getBuildHash(): Promise<string> {
 	try {
@@ -47,56 +52,54 @@ async function getDuration(timespan: number|null): Promise<string> {
 	return output;
 }
 
-export default class StatsCommand implements ICommand {
+export default class PollSlashCommand implements ISlashCommand {
 
-	commandName = 'stats';
-	aliases = null;
+	name = 'stats';
+	description = 'Get servant stats';
 	permissionLevel = PermissionLevel.User;
-	guildOnly = false;
+	guildOnly = true;
 
-	usageText = ';stats';
-	helpText = 'Shows bot stats';
+	usageText = '/stats';
 
-	async run(discordClient: Client, message: Message): Promise<void> {
+	options = [];
+
+	async run(discordClient: DiscordClient): Promise<ResponseMessage|undefined> {
 		const build = await getBuildHash();
 		const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
 		const uptime = await getDuration(discordClient.uptime);
 
-		const embed = createMessageEmbed({
+		return {
 			color: 0x33CC33,
 			author: 'Bot statistics',
 			footer: 'Servant developed by Westar and Notfood, originally by Danskbog',
 			fields: [
 				{
-					key: 'Build',
+					name: 'Build',
 					value: `${build}`,
 					inline: true,
 				},
 				{
-					key: 'Memory Usage',
+					name: 'Memory Usage',
 					value: `${memoryUsage} MB`,
 					inline: true,
 				},
 				{
-					key: 'Uptime',
+					name: 'Uptime',
 					value: `${uptime}`,
 					inline: false,
 				},
 				{
-					key: 'Discord.js',
+					name: 'Discord.js',
 					value: `${DiscordVersion}`,
 					inline: true,
 				},
 				{
-					key: 'Node',
+					name: 'Node',
 					value: `${process.version}`,
 					inline: true,
 				},
 			],
-		});
-
-		message.channel.send({embed});
+		};
 	}
 
 }
-

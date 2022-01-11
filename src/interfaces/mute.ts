@@ -1,4 +1,4 @@
-export default interface Mute {
+export interface Mute {
 	id: number;
 	guildId: string;
 	userId: string;
@@ -8,3 +8,4 @@ export default interface Mute {
 	end: Date;
 	reason: string;
 }
+
