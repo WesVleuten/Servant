@@ -90,6 +90,22 @@ export default class ConfigCommand implements ICommand {
 				}))).join('\n');
 			}
 
+			let quoteThresholdString = 'Off';
+			if (ss.quoteThreshold > 0) {
+				quoteThresholdString = ss.quoteThreshold + ' reactions';
+			}
+
+			let quoteEmojiString = 'Off';
+			if (ss.quoteEmoji) {
+				quoteEmojiString = `${Buffer.from(ss.quoteEmoji, 'base64')}`;
+			}
+
+			let quoteChannelString = 'Off';
+			if (ss.quoteChannel) {
+				const quoteChannel = await objectResolver.ResolveGuildChannel(guild, ss.quoteChannel);
+				quoteChannelString = `${quoteChannel?.name || 'ERR-404'} (${ss.quoteChannel})`;
+			}
+
 			const embed = createMessageEmbed({
 				color: 0x33CC33,
 				author: 'Bot Config',
@@ -139,10 +155,22 @@ export default class ConfigCommand implements ICommand {
 						key: 'whiteListedRoles',
 						value: whiteListedRolesString,
 					},
+					{
+						key: "quoteThreshold",
+						value: quoteThresholdString,
+					},
+					{
+						key: "quoteEmoji",
+						value: quoteEmojiString,
+					},
+					{
+						key: "quoteChannel",
+						value: quoteChannelString,
+					},
 				],
 			});
 
-			message.reply({embed});
+			message.reply({ embed });
 			return;
 		}
 
@@ -217,6 +245,34 @@ export default class ConfigCommand implements ICommand {
 						return;
 					}
 					ss.moderatorRole = modRole.id;
+				}
+			} else if (key == 'quoteThreshold') {
+				if (value == 'null') {
+					ss.quoteThreshold = 10;
+				} else {
+					const threshold = Number(value)
+					if (isNaN(threshold)) {
+						message.reply('Couldnt parse threshold');
+						return;
+					}
+					ss.quoteThreshold = threshold;
+				}
+			} else if (key == 'quoteEmoji') {
+				if (value == 'null') {
+					ss.quoteChannel = null;
+				} else {
+					ss.quoteEmoji = Buffer.from(value).toString('base64');
+				}
+			} else if (key == 'quoteChannel') {
+				if (value == 'null') {
+					ss.quoteChannel = null;
+				} else {
+					const quoteChannel = await objectResolver.ResolveGuildChannel(guild, value);
+					if (!quoteChannel) {
+						message.reply('Couldnt find channel');
+						return;
+					}
+					ss.quoteChannel = quoteChannel.id;
 				}
 			} else if (key == 'muteRole') {
 				if (value == 'null') {

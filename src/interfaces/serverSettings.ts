@@ -17,6 +17,10 @@ export interface ServerSettings {
 	adminRole: string|null;
 	moderatorRole: string|null;
 
+	quoteThreshold: number;
+	quoteEmoji: string|null;
+  	quoteChannel: string | null;
+  
 	muteRole: string|null;
 	muteChannel: string|null;
 }

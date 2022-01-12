@@ -9,6 +9,7 @@ import GuildDeleteEvent from './events/guildDelete';
 import ChannelCreateEvent from './events/channelCreate';
 import VoiceStateUpdateEvent from './events/voiceStateUpdate';
 import MessageDeleteBulkEvent from './events/messageDeleteBulk';
+import MessageReactionAddEvent from './events/messageReactionAdd';
 import ErrorEvent from './events/error';
 import MessageEvent from './events/message';
 import InteractionEvent from './events/interactions';
@@ -54,14 +55,15 @@ const EventBind = {
 	'ready': ReadyEvent,
 	'message': MessageEvent,
 	'error': ErrorEvent,
-	'messageDelete': MessageDeleteEvent,
 	'messageUpdate': MessageUpdateEvent,
+	'messageDelete': MessageDeleteEvent,
+	'messageDeleteBulk': MessageDeleteBulkEvent,
+	'messageReactionAdd': MessageReactionAddEvent,
 	'guildCreate': GuildCreateEvent,
 	'guildDelete': GuildDeleteEvent,
 	'channelCreate': ChannelCreateEvent,
 	'voiceStateUpdate': VoiceStateUpdateEvent,
-	'messageDeleteBulk': MessageDeleteBulkEvent,
-	'presenceUpdate': PresenceUpdateEvent,
+	'presenceUpdate': PresenceUpdateEvent
 };
 
 export async function BindRoutes(discordClient: DiscordClient): Promise<void> {
