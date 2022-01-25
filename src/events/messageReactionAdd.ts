@@ -1,8 +1,8 @@
 import { Client as DiscordClient, MessageReaction, User, PartialUser } from "discord.js";
 import ServerSettingsRepository from "../repository/serverSettings";
 import { getTextChannel } from "../lib/util";
-import QuotesRepository from "../repository/quotes";
 import createMessageEmbed from "../wrapper/discord/messageEmbed";
+import QuotesRepository from "../repository/quotes";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
   const guildId = messageReaction.message.guild?.id!;
@@ -33,7 +33,7 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
     let content = `${emoji} **${msg.member.toString()} in ${msg.channel.toString()}**`;
     const embed = createMessageEmbed({
       color: 0xFFA500,
-      footer: `React with ${emoji} to get your message highlighted!` 
+      footer: `React with ${emoji} to get your message highlighted!`
     });
     let files = null;
 
@@ -44,7 +44,7 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
     }
 
     if (msg.content != "") {
-      embed.addField( `**${msg.member.nickname || msg.author.username} said**`, msg.content);
+      embed.addField(`**${msg.member.nickname || msg.author.username} said**`, msg.content);
     }
 
     embed.addField(`Source`, `[Click](${msg.url})`);
