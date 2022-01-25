@@ -37,10 +37,8 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
     });
     let files = null;
 
-    if (msg.attachments.size <= 1 && msg.attachments.every(x => x.url.endsWith("png") || x.url.endsWith("jpeg") || x.url.endsWith("jpg") || x.url.endsWith("gif"))) {
-      if (msg.attachments.size != 0) {
-        embed.setImage(msg.attachments.first().url)
-      }
+    if (msg.attachments.size == 1 && msg.attachments.every(x => x.url.endsWith("png") || x.url.endsWith("jpeg") || x.url.endsWith("jpg") || x.url.endsWith("gif"))) {
+      embed.setImage(msg.attachments.first().url)
     } else {
       files = msg.attachments.array();
     }
