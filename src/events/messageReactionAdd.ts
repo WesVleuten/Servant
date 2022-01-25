@@ -1,4 +1,4 @@
-import { Client as DiscordClient, MessageReaction, User, PartialUser, Message } from "discord.js";
+import { Client as DiscordClient, MessageReaction, User, PartialUser } from "discord.js";
 import ServerSettingsRepository from "../repository/serverSettings";
 import { getTextChannel } from "../lib/util";
 import QuotesRepository from "../repository/quotes";
