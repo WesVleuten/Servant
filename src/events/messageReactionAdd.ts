@@ -6,12 +6,12 @@ import QuotesRepository from "../repository/quotes";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
   if (messageReaction.partial) {
-		try {
-			await messageReaction.fetch();
-		} catch (error) {
-			return;
-		}
-	}
+    try {
+      await messageReaction.fetch();
+    } catch (error) {
+      return;
+    }
+  }
 
   const guildId = messageReaction.message.guild?.id!;
   const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);

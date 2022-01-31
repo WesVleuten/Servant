@@ -65,5 +65,5 @@ export default async function MessageUpdateEvent(discordClient: DiscordClient, o
 		],
 	});
 
-	logChannel.send({embed});
+	logChannel.send({ embed });
 }
