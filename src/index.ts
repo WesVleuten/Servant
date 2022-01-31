@@ -7,7 +7,9 @@ import { DiscordInteractions } from 'slash-commands';
 import Config from './lib/config';
 import { BindRoutes, registerSlashCommand } from './routes';
 
-const discord = new DiscordClient();
+const discord = new DiscordClient({
+	partials: ['MESSAGE', 'REACTION'],
+});
 BindRoutes(discord);
 discord.login(Config.discord.botToken);
 

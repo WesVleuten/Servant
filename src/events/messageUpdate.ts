@@ -7,43 +7,51 @@ import { getTextChannel } from '../lib/util';
 import createMessageEmbed from '../wrapper/discord/messageEmbed';
 
 export default async function MessageUpdateEvent(discordClient: DiscordClient, oldMessage: Message, newMessage: Message): Promise<void> {
-	if (oldMessage.author.bot) return;
-
-	const serverSettings = await ServerSettingsRepository.GetByGuildId(oldMessage?.guild?.id);
+	const serverSettings = await ServerSettingsRepository.GetByGuildId(newMessage?.guild?.id);
 	if (serverSettings === null) {
-		Logger.error(`Couldnt get server settings for ${oldMessage?.guild?.id}`);
+		Logger.error(`Couldnt get server settings for ${newMessage?.guild?.id}`);
 		return;
 	}
 
-	if (!serverSettings.logChannel || oldMessage.content === newMessage.content) {
+	if (oldMessage.partial) {
+		try {
+			await oldMessage.fetch();
+		} catch (error) {
+			return;
+		}
+	}
+
+	const author = newMessage.author;
+	const channel = newMessage.channel;
+	if (author.bot || !serverSettings.logChannel || oldMessage.content === newMessage.content) {
 		return;
 	}
 
 	// add action to database
-	await ActionLogRepository.Add(serverSettings.id, oldMessage.author.id, ActionType.MessageEdit, oldMessage.channel.id, {
+	await ActionLogRepository.Add(serverSettings.id, author.id, ActionType.MessageEdit, channel.id, {
 		from: oldMessage.content,
 		to: newMessage.content,
 	});
 
-	const channel = getTextChannel(discordClient, serverSettings.logChannel);
-	if (channel === null) {
-		Logger.error(`Couldnt get log channel for server ${oldMessage?.guild?.id}`);
+	const logChannel = getTextChannel(discordClient, serverSettings.logChannel);
+	if (logChannel === null) {
+		Logger.error(`Couldnt get log channel for server ${newMessage?.guild?.id}`);
 		return;
 	}
 
 	const embed = createMessageEmbed({
 		color: 0xFFA500,
 		author: 'Message Edited',
-		footer: `User ID: ${newMessage.author.id}`,
+		footer: `User ID: ${author.id}`,
 		fields: [
 			{
 				key: 'User',
-				value: newMessage.author.tag,
+				value: author.tag,
 				inline: true,
 			},
 			{
 				key: 'Channel',
-				value: `${oldMessage.channel}`,
+				value: `${channel}`,
 				inline: true,
 			},
 			{
@@ -57,5 +65,5 @@ export default async function MessageUpdateEvent(discordClient: DiscordClient, o
 		],
 	});
 
-	channel.send({embed});
+	logChannel.send({ embed });
 }
