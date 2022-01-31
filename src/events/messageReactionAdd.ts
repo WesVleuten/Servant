@@ -5,13 +5,21 @@ import createMessageEmbed from "../wrapper/discord/messageEmbed";
 import QuotesRepository from "../repository/quotes";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
+  if (messageReaction.partial) {
+		try {
+			await messageReaction.fetch();
+		} catch (error) {
+			return;
+		}
+	}
+
   const guildId = messageReaction.message.guild?.id!;
   const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
   if (serverSettings === null) {
     return;
   }
 
-  const reactionsCount = messageReaction.users.cache.filter(u => u.id !== messageReaction.message.author.id).size + 1;
+  const reactionsCount = messageReaction.users.cache.filter(u => u.id !== messageReaction.message.author.id).size;
   if (messageReaction.count === null
     || serverSettings.quoteChannel === null
     || serverSettings.quoteEmoji === null
