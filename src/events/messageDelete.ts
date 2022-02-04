@@ -22,7 +22,15 @@ interface ExtraChannel {
  */
 
 export default async function MessageDeleteEvent(discordClient: DiscordClient, message: Message): Promise<void> {
-	if (!message.guild) return; // DM message
+	if (message.partial) {
+		try {
+			await message.fetch();
+		} catch (error) {
+			return;
+		}
+	}
+
+	if (!message.guild) return; // DM or partial message
 
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(message?.guild?.id);
 	if (serverSettings === null) {
