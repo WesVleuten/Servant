@@ -30,14 +30,14 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		}
 	}
 
-	if (!message.guild) return; // DM or partial message
+	if (!message.guild) return; // DM message
 
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(message?.guild?.id);
 	if (serverSettings === null) {
 		Logger.error(`Couldnt get server settings for ${message?.guild?.id}`);
 		return;
 	}
-	
+
 	const guild = message.guild;
 
 	// Call delete on quotes repository in case it's a quote
@@ -110,5 +110,5 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		],
 	});
 
-	channel.send({embed});
+	channel.send({ embed });
 }
