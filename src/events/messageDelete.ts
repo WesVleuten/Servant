@@ -22,6 +22,14 @@ interface ExtraChannel {
  */
 
 export default async function MessageDeleteEvent(discordClient: DiscordClient, message: Message): Promise<void> {
+	if (message.partial) {
+		try {
+			await message.fetch();
+		} catch (error) {
+			return;
+		}
+	}
+
 	if (!message.guild) return; // DM message
 
 	const serverSettings = await ServerSettingsRepository.GetByGuildId(message?.guild?.id);
@@ -29,7 +37,7 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		Logger.error(`Couldnt get server settings for ${message?.guild?.id}`);
 		return;
 	}
-	
+
 	const guild = message.guild;
 
 	// Call delete on quotes repository in case it's a quote
@@ -102,5 +110,5 @@ export default async function MessageDeleteEvent(discordClient: DiscordClient, m
 		],
 	});
 
-	channel.send({embed});
+	channel.send({ embed });
 }
