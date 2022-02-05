@@ -59,7 +59,7 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
 
   const quoteMsg = {
     content: content,
-    files: msg.attachments.array(),
+    files: files,
     embed: embed
   };
 
