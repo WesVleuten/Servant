@@ -31,7 +31,7 @@ export async function CreateOrUpdateQuote(discordClient: DiscordClient, message:
   const reactions = message.reactions.cache.find(x => Buffer.from(x.emoji.name).toString('base64') == serverSettings.quoteEmoji);
   let reactionsCount = 0;
   if (reactions) {
-    reactionsCount = reactions.users.cache.filter(u => u.id !== author.id).size;
+    reactionsCount = (await reactions.users.fetch()).filter(u => u.id !== author.id).size;
   }
 
   const emoji = Buffer.from(serverSettings.quoteEmoji, 'base64');
