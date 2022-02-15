@@ -8,7 +8,7 @@ import { SetMutedPermissionsForChannel } from '../lib/mutedRole';
 import ObjectResolver from '../lib/objectResolver';
 import { CreateOrUpdateQuote } from '../lib/quote';
 
-export default class MQuoteCommand implements ICommand {
+export default class ManualQuoteCommand implements ICommand {
 
 	commandName = 'mquote';
 	aliases = null;
