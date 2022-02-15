@@ -52,7 +52,8 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
   }
 
   if (msg.content != "") {
-    embed.addField(`**${msg.member.nickname || msg.author.username} said**`, msg.content);
+    embed.title = `**${msg.member.nickname || msg.author.username} said**`;
+    embed.description = msg.content;
   }
 
   embed.addField(`Source`, `[Click](${msg.url})`);
