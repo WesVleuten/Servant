@@ -31,6 +31,7 @@ import PresenceUpdateEvent from './events/presenceUpdate';
 import MuteCommand from './commands/mute';
 import UnmuteCommand from './commands/unmute';
 import PollCommand from './commands/poll';
+import MQuoteCommand from './commands/mquote';
 
 const SlashCommands: ISlashCommand[] = [
 	PollSlashCommand,
@@ -48,7 +49,8 @@ const Commands: ICommand[] = [
 	LiveResetCommand,
 	MuteCommand,
 	UnmuteCommand,
-	PollCommand
+	PollCommand,
+    MQuoteCommand,
 ].map(x => new x());
 
 const EventBind = {
