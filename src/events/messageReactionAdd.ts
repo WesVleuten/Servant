@@ -1,14 +1,13 @@
+import { CreateOrUpdateQuote } from "../lib/quote";
 import { Client as DiscordClient, MessageReaction, User, PartialUser } from "discord.js";
 import ServerSettingsRepository from "../repository/serverSettings";
-import { getTextChannel } from "../lib/util";
-import createMessageEmbed from "../wrapper/discord/messageEmbed";
-import QuotesRepository from "../repository/quotes";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
   if (messageReaction.partial) {
     try {
       await messageReaction.fetch();
     } catch (error) {
+      console.error(error);
       return;
     }
   }
@@ -16,6 +15,7 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
   const guildId = messageReaction.message.guild?.id!;
   const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
   if (serverSettings === null) {
+    console.error('messageReactionAdd: Server settings not found');
     return;
   }
 
@@ -29,47 +29,5 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
     return;
   }
 
-  const channel = getTextChannel(discordClient, serverSettings.quoteChannel);
-  if (channel === null) {
-    return;
-  }
-
-  const msg = messageReaction.message;
-  const emoji = Buffer.from(serverSettings.quoteEmoji, 'base64');
-  const content = `${reactionsCount} ${emoji} **${msg.member.toString()} in ${msg.channel.toString()}**`;
-
-  const embed = createMessageEmbed({
-    color: 0xFFA500,
-    footer: `React with ${emoji} to get a worthy message highlighted!`,
-    thumbnail: msg.author.avatarURL()
-  });
-  let files = null;
-
-  if (msg.attachments.size == 1 && msg.attachments.every(x => x.url.endsWith("png") || x.url.endsWith("jpeg") || x.url.endsWith("jpg") || x.url.endsWith("gif"))) {
-    embed.setImage(msg.attachments.first().url)
-  } else {
-    files = msg.attachments.array();
-  }
-
-  if (msg.content != "") {
-    embed.title = `**${msg.member.nickname || msg.author.username} said**`;
-    embed.description = msg.content;
-  }
-
-  embed.addField(`Source`, `[Click](${msg.url})`);
-
-  const quoteMsg = {
-    content: content,
-    files: files,
-    embed: embed
-  };
-
-  const quote = await QuotesRepository.Get(guildId!, messageReaction.message.id);
-  if (!quote) {
-    const botMessage = await channel.send(quoteMsg);
-    QuotesRepository.Add(guildId, botMessage.id, msg.id)
-  } else {
-    let botMessage = await channel.messages.fetch(quote.botMessageId);
-    await botMessage.edit(quoteMsg);
-  }
+  return CreateOrUpdateQuote(discordClient, messageReaction.message);
 }
