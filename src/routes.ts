@@ -50,7 +50,7 @@ const Commands: ICommand[] = [
 	MuteCommand,
 	UnmuteCommand,
 	PollCommand,
-    MQuoteCommand,
+	MQuoteCommand,
 ].map(x => new x());
 
 const EventBind = {
