@@ -1,6 +1,7 @@
 import { CreateOrUpdateQuote } from "../lib/quote";
 import { Client as DiscordClient, MessageReaction, User, PartialUser } from "discord.js";
 import ServerSettingsRepository from "../repository/serverSettings";
+import BlackListRepository from "../repository/blackList";
 
 export default async function MessageReactionAddEvent(discordClient: DiscordClient, messageReaction: MessageReaction, user: User | PartialUser) {
   if (messageReaction.partial) {
@@ -16,6 +17,12 @@ export default async function MessageReactionAddEvent(discordClient: DiscordClie
   const serverSettings = await ServerSettingsRepository.GetByGuildId(guildId);
   if (serverSettings === null) {
     console.error('messageReactionAdd: Server settings not found');
+    return;
+  }
+
+  const channelId = messageReaction.message.channel.id;
+  const blackListedChannels = await BlackListRepository.GetByGuildId(guildId)
+  if (blackListedChannels.length > 0 && blackListedChannels.find(c => c.channelId == channelId) !== undefined) {
     return;
   }
 

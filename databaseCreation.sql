@@ -71,3 +71,10 @@ CREATE TABLE `Muted` (
   `reason` longtext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `BlackListedChannels`;
+CREATE TABLE `BlackListedChannels` (
+  `guildId` VARCHAR(255) NOT NULL,
+  `channelId` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`guildId`, `channelId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

@@ -2,6 +2,7 @@ import { ICommand, PermissionLevel } from './base';
 import { Message, Client } from 'discord.js';
 import ServerSettingsRepository from '../repository/serverSettings';
 import WhiteListRepository from '../repository/whiteList';
+import BlackListRepository from '../repository/blackList';
 import TwitchClient from '../lib/twitch';
 import createMessageEmbed from '../wrapper/discord/messageEmbed';
 import { SetMutedPermissionsForChannel } from '../lib/mutedRole';
@@ -21,6 +22,7 @@ export default class ConfigCommand implements ICommand {
 		const guildId = message.guild?.id;
 		const ss = await ServerSettingsRepository.GetByGuildId(guildId);
 		const wl = await WhiteListRepository.GetByGuildId(guildId);
+		const bl = await BlackListRepository.GetByGuildId(guildId);
 		const objectResolver = new ObjectResolver(discordClient);
 		if (!ss || !wl || !message.guild) {
 			return;
@@ -106,6 +108,14 @@ export default class ConfigCommand implements ICommand {
 				quoteChannelString = `${quoteChannel?.name || 'ERR-404'} (${ss.quoteChannel})`;
 			}
 
+			let blackListedChannelsString = 'Off';
+			if (bl.length > 0) {
+				blackListedChannelsString = (await Promise.all(bl.map(async r => {
+					const channel = await objectResolver.ResolveGuildChannel(guild, r.channelId);
+					return channel?.name + ' (' + r.channelId + ')';
+				}))).join('\n');
+			}
+
 			const embed = createMessageEmbed({
 				color: 0x33CC33,
 				author: 'Bot Config',
@@ -166,6 +176,10 @@ export default class ConfigCommand implements ICommand {
 					{
 						key: "quoteChannel",
 						value: quoteChannelString,
+					},
+					{
+						key: 'blackListedChannels',
+						value: blackListedChannelsString,
 					},
 				],
 			});
@@ -346,6 +360,13 @@ export default class ConfigCommand implements ICommand {
 					return;
 				}
 				WhiteListRepository.AddRole(guildId, role.id);
+			} else if (key == 'blackListedChannels') {
+				const channel = await objectResolver.ResolveGuildChannel(guild, value);
+				if (channel == null) {
+					message.reply('Channel id does not exist in this guild');
+					return;
+				}
+				BlackListRepository.AddChannel(guildId, channel.id);
 			}
 		}
 
@@ -369,6 +390,13 @@ export default class ConfigCommand implements ICommand {
 					WhiteListRepository.RemoveRole(guildId, value);
 				} else {
 					message.reply('Role is not in whitelist');
+					return;
+				}
+			} else if (key == 'blackListedChannels') {
+				if (bl.find(r => r.channelId == value)) {
+					BlackListRepository.RemoveChannel(guildId, value);
+				} else {
+					message.reply('Channel is not in blacklist');
 					return;
 				}
 			}
